@@ -1,0 +1,6 @@
+databaseChangeLog:
+
+  - include:
+      file: authorization/changelog.yaml
+      relativeToChangelogFile: true
+
