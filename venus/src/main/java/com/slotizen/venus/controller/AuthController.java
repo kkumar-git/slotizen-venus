@@ -1,7 +1,10 @@
 package com.slotizen.venus.controller;
 
 import com.slotizen.venus.dto.*;
+import com.slotizen.venus.model.OtpToken;
+import com.slotizen.venus.model.User;
 import com.slotizen.venus.service.UserService;
+import com.slotizen.venus.service.OtpService;
 import com.slotizen.venus.service.SocialAuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +26,10 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
-    
+
+    @Autowired
+    private OtpService otpService;
+
     @Autowired
     private SocialAuthService socialAuthService;
 
@@ -64,20 +70,89 @@ public class AuthController {
         try {
             boolean verified = userService.verifyOtp(request);
             if (verified) {
-                return ResponseEntity.ok("OTP verified successfully");
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "OTP verified successfully");
+                return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired OTP");
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "Invalid or expired OTP");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
         } catch (Exception e) {
             logger.error("Unexpected error during OTP verification", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<?> resendOtp(@RequestBody OtpRequest request) {
+        try {
+            // Try to find the user by email
+            User user = userService.findByEmail(request.getEmail());
+            if (user == null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "User not found");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            // Generate and send a new OTP
+            boolean sent = false;
+            try {
+                OtpToken otpToken = otpService.generateOtp(user, com.slotizen.venus.model.OtpToken.OtpType.REGISTRATION);
+                sent = otpService.sendOtpEmail(user, otpToken.getOtp());
+            } catch (Exception e) {
+                logger.error("Failed to resend OTP for user: {}", user.getEmail(), e);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            if (sent) {
+                response.put("success", true);
+                response.put("message", "OTP resent successfully");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "Failed to resend OTP");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected error during OTP resend", e);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        // ...implementation...
-        return ResponseEntity.ok().build();
+        try {
+            String token = userService.login(request);
+            if (token != null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Login successful");
+                response.put("token", token);
+                // Optionally, add user info here if needed
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "Invalid credentials or user not verified");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected error during login", e);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @PostMapping("/forgot-password")

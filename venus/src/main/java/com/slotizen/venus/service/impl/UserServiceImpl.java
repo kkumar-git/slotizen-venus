@@ -92,14 +92,39 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean verifyOtp(OtpRequest request) {
-        // TODO: Implement OTP verification logic
-        return false;
+        if (request == null || request.getEmail() == null || request.getOtp() == null) {
+            logger.warn("OTP verification failed: missing email or otp");
+            return false;
+        }
+        return otpService.validateOtp(request.getEmail(), request.getOtp(), OtpToken.OtpType.REGISTRATION);
     }
 
     @Override
     public String login(LoginRequest request) {
-        // TODO: Implement login logic
-        return null;
+        if (request == null || request.getUsernameOrEmail() == null || request.getPassword() == null) {
+            logger.warn("Login failed: missing username/email or password");
+            return null;
+        }
+        Optional<User> userOpt = userRepository.findByEmail(request.getUsernameOrEmail());
+        if (userOpt.isEmpty()) {
+            // Try username if not found by email (if you have username field)
+            // userOpt = userRepository.findByUsername(request.getUsernameOrEmail());
+            logger.warn("Login failed: user not found for {}", request.getUsernameOrEmail());
+            return null;
+        }
+        User user = userOpt.get();
+        if (!user.isEnabled()) {
+            logger.warn("Login failed: user not enabled for {}", user.getEmail());
+            return null;
+        }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            logger.warn("Login failed: invalid password for {}", user.getEmail());
+            return null;
+        }
+        // Generate JWT token
+        String token = com.slotizen.venus.security.JwtUtil.generateToken(user.getEmail());
+        logger.info("Login successful for user: {}", user.getEmail());
+        return token;
     }
 
     @Override
