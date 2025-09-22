@@ -26,6 +26,19 @@ spring:
   liquibase:
     enabled: false
 
+# JWT Configuration for tests
+jwt:
+  secret: test_jwt_secret_1234567890abcdefABCDEF1234567890
+  access-token-expiration-ms: 3600000
+  refresh-token-expiration-ms: 604800000
+
+# CORS Configuration for tests
+cors:
+  allowed-origins: "http://localhost:3000"
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "Authorization,Content-Type,Cache-Control"
+  allow-credentials: true
+
 # Logging for tests
 logging:
   level:

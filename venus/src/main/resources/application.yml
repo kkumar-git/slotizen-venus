@@ -64,3 +64,15 @@ logging:
     org.springframework.transaction: TRACE
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:u8Jk2n4pQwErTyUiOpAsDfGhJkLzXcVb12345678}
+  access-token-expiration-ms: 3600000 # 1 hour
+  refresh-token-expiration-ms: 604800000 # 7 days
+
+# CORS Configuration
+cors:
+  allowed-origins: "http://localhost:8080,https://your-react-frontend.com"
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "Authorization,Content-Type,Cache-Control"
+  allow-credentials: true

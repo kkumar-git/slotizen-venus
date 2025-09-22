@@ -4,6 +4,7 @@ import com.slotizen.venus.dto.*;
 import com.slotizen.venus.model.OtpToken;
 import com.slotizen.venus.model.User;
 import com.slotizen.venus.service.UserService;
+import com.slotizen.venus.service.AuthService;
 import com.slotizen.venus.service.OtpService;
 import com.slotizen.venus.service.SocialAuthService;
 import org.slf4j.Logger;
@@ -28,41 +29,20 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private OtpService otpService;
 
     @Autowired
     private SocialAuthService socialAuthService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Validated @RequestBody RegisterRequest request, BindingResult bindingResult) {
-        try {
-            // Check for validation errors
-            if (bindingResult.hasErrors()) {
-                Map<String, String> errors = new HashMap<>();
-                for (FieldError error : bindingResult.getFieldErrors()) {
-                    errors.put(error.getField(), error.getDefaultMessage());
-                }
-                
-                RegisterResponse response = RegisterResponse.failure("Validation failed");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            // Process registration
-            RegisterResponse response = userService.register(request);
-            
-            if (response.isSuccess()) {
-                logger.info("User registration successful for email: {}", request.getEmail());
-                return ResponseEntity.ok(response);
-            } else {
-                logger.warn("User registration failed for email: {} - {}", request.getEmail(), response.getMessage());
-                return ResponseEntity.badRequest().body(response);
-            }
-            
-        } catch (Exception e) {
-            logger.error("Unexpected error during registration", e);
-            RegisterResponse response = RegisterResponse.failure("Internal server error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public ResponseEntity<JwtResponse> register(@Validated @RequestBody RegisterRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(new JwtResponse(false, "Validation failed", null, null, null));
         }
+        return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/verify-otp")
@@ -130,29 +110,18 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            String token = userService.login(request);
-            if (token != null) {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", true);
-                response.put("message", "Login successful");
-                response.put("token", token);
-                // Optionally, add user info here if needed
-                return ResponseEntity.ok(response);
-            } else {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", "Invalid credentials or user not verified");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-            }
-        } catch (Exception e) {
-            logger.error("Unexpected error during login", e);
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "Internal server error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtResponse> refresh(@RequestBody TokenRefreshRequest request) {
+        return ResponseEntity.ok(authService.refresh(request));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<?>> logout(@RequestBody TokenRefreshRequest request) {
+        return ResponseEntity.ok(authService.logout(request.getRefreshToken()));
     }
 
     @PostMapping("/forgot-password")

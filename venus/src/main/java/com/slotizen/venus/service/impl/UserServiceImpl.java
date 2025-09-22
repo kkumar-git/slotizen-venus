@@ -101,15 +101,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(LoginRequest request) {
-        if (request == null || request.getUsernameOrEmail() == null || request.getPassword() == null) {
+        if (request == null || request.getEmail() == null || request.getPassword() == null) {
             logger.warn("Login failed: missing username/email or password");
             return null;
         }
-        Optional<User> userOpt = userRepository.findByEmail(request.getUsernameOrEmail());
+        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
         if (userOpt.isEmpty()) {
             // Try username if not found by email (if you have username field)
             // userOpt = userRepository.findByUsername(request.getUsernameOrEmail());
-            logger.warn("Login failed: user not found for {}", request.getUsernameOrEmail());
+            logger.warn("Login failed: user not found for {}", request.getEmail());
             return null;
         }
         User user = userOpt.get();
