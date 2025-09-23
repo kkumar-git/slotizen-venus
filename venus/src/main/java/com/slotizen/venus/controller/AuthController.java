@@ -3,6 +3,7 @@ package com.slotizen.venus.controller;
 import com.slotizen.venus.dto.*;
 import com.slotizen.venus.model.OtpToken;
 import com.slotizen.venus.model.User;
+import com.slotizen.venus.security.JwtService;
 import com.slotizen.venus.service.UserService;
 import com.slotizen.venus.service.AuthService;
 import com.slotizen.venus.service.OtpService;
@@ -36,6 +37,8 @@ public class AuthController {
 
     @Autowired
     private SocialAuthService socialAuthService;
+    
+    @Autowired private JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@Validated @RequestBody RegisterRequest request, BindingResult bindingResult) {
@@ -53,6 +56,11 @@ public class AuthController {
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
                 response.put("message", "OTP verified successfully");
+                
+                String accessToken = jwtService.generateToken(request.getEmail(), false);
+                String refreshToken = jwtService.generateToken(request.getEmail(), true);
+                response.put("accessToken", accessToken);
+                response.put("refreshToken", refreshToken);
                 return ResponseEntity.ok(response);
             } else {
                 Map<String, Object> response = new HashMap<>();

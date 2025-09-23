@@ -4,3 +4,7 @@ databaseChangeLog:
       file: authorization/changelog.yaml
       relativeToChangelogFile: true
 
+  - include:
+      file: business/changelog.yaml
+      relativeToChangelogFile: true    
+
