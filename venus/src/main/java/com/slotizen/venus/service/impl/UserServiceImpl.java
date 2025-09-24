@@ -47,8 +47,6 @@ public class UserServiceImpl implements UserService {
                 request.getLastName(),
                 request.getEmail(),
                 request.getPhone(),
-                request.getCompanyName(),
-                request.getBusinessType(),
                 passwordEncoder.encode(request.getPassword())
             );
 

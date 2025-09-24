@@ -1,20 +1,34 @@
 package com.slotizen.venus.service.impl;
 
-import com.slotizen.venus.dto.*;
-import com.slotizen.venus.model.*;
-import com.slotizen.venus.repository.*;
-import com.slotizen.venus.service.BusinessService;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.ZonedDateTime;
-import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.slotizen.venus.dto.BusinessHoursRequest;
+import com.slotizen.venus.dto.BusinessHoursResponse;
+import com.slotizen.venus.dto.BusinessProfileRequest;
+import com.slotizen.venus.dto.BusinessProfileResponse;
+import com.slotizen.venus.dto.LogoUploadResponse;
+import com.slotizen.venus.model.BusinessHours;
+import com.slotizen.venus.model.BusinessProfile;
+import com.slotizen.venus.model.DailyHours;
+import com.slotizen.venus.repository.BusinessHoursRepository;
+import com.slotizen.venus.repository.BusinessProfileRepository;
+import com.slotizen.venus.service.BusinessService;
+import com.slotizen.venus.service.StorageService;
 
 @Service
 @Transactional
 public class BusinessServiceImpl implements BusinessService {
     @Autowired private BusinessProfileRepository businessProfileRepository;
     @Autowired private BusinessHoursRepository businessHoursRepository;
+    @Autowired
+    private StorageService storageService;
 
     @Override
     public BusinessProfileResponse createOrUpdateProfile(BusinessProfileRequest request, UUID businessId) {
@@ -55,9 +69,19 @@ public class BusinessServiceImpl implements BusinessService {
         BusinessHours hours = businessHoursRepository.findByBusinessProfile(profile);
         if (hours == null) hours = new BusinessHours();
         hours.setBusinessProfile(profile);
-        // Map request.businessHours to hours' fields (monday, tuesday, ...)
-        // ... (mapping logic to be implemented)
+
+        // Mapping
+        var bh = request.businessHours;
+        hours.setMonday(toDaily(bh.monday));
+        hours.setTuesday(toDaily(bh.tuesday));
+        hours.setWednesday(toDaily(bh.wednesday));
+        hours.setThursday(toDaily(bh.thursday));
+        hours.setFriday(toDaily(bh.friday));
+        hours.setSaturday(toDaily(bh.saturday));
+        hours.setSunday(toDaily(bh.sunday));
+
         businessHoursRepository.save(hours);
+
         BusinessHoursResponse resp = new BusinessHoursResponse();
         resp.success = true;
         resp.message = "Business hours updated successfully";
@@ -65,6 +89,29 @@ public class BusinessServiceImpl implements BusinessService {
         resp.data.businessId = businessId;
         resp.data.businessHours = request.businessHours;
         return resp;
+    }
+
+    @Override
+    public LogoUploadResponse uploadLogo(Long userId, String businessId, MultipartFile file) {
+        BusinessProfile profile = businessProfileRepository.findById(UUID.fromString(businessId))
+                .orElseThrow(() -> new IllegalArgumentException("Business not found"));
+        // (Optional) verify userId owns this business
+        String url = storageService.store("business-logo", businessId, file);
+        profile.setLogoUrl(url);
+        businessProfileRepository.save(profile);
+        return new LogoUploadResponse(true, "Logo uploaded", url);
+    }
+    private DailyHours toDaily(BusinessHoursRequest.Day d) {
+        if (d == null) return null;
+        return new DailyHours(
+            d.isOpen,
+            parseTime(d.openTime),
+            parseTime(d.closeTime)
+        );
+    }
+
+    private LocalTime parseTime(String v) {
+        return (v == null || v.isBlank()) ? null : LocalTime.parse(v);
     }
 
     private String generateSlug(String name) {

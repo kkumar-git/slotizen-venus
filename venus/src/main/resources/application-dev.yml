@@ -1,0 +1,9 @@
+spring:
+  profiles: dev
+
+app:
+  storage:
+    provider: local
+    local:
+      base-dir: uploads
+      public-base-url: http://localhost:8081/static

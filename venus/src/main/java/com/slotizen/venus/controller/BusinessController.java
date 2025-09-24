@@ -1,11 +1,27 @@
 package com.slotizen.venus.controller;
 
-import com.slotizen.venus.dto.*;
-import com.slotizen.venus.service.BusinessService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.slotizen.venus.dto.BusinessHoursRequest;
+import com.slotizen.venus.dto.BusinessHoursResponse;
+import com.slotizen.venus.dto.BusinessProfileRequest;
+import com.slotizen.venus.dto.BusinessProfileResponse;
+import com.slotizen.venus.dto.LogoUploadResponse;
+import com.slotizen.venus.service.BusinessService;
+import com.slotizen.venus.util.SecurityUtils;
 
 @RestController
 @RequestMapping("/api/business")
@@ -25,5 +41,20 @@ public class BusinessController {
     @PostMapping("/{businessId}/hours")
     public ResponseEntity<BusinessHoursResponse> setupHours(@PathVariable UUID businessId, @RequestBody BusinessHoursRequest request) {
         return ResponseEntity.ok(businessService.setupBusinessHours(businessId, request));
+    }
+    
+    @PostMapping(value = "/{businessId}/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public LogoUploadResponse uploadLogo(
+            @PathVariable String businessId,
+            @RequestPart("file") MultipartFile file,
+            Authentication authentication
+    ) {
+        // Extract userId from auth principal or token (adjust to your security context)
+        Long userId = extractUserId(authentication);
+        return businessService.uploadLogo(userId, businessId, file);
+    }
+    
+    private Long extractUserId(Authentication auth) {
+        return SecurityUtils.getCurrentUserId();
     }
 }

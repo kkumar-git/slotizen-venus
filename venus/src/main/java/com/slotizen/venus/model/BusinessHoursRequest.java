@@ -1,4 +1,4 @@
-package com.slotizen.venus.dto;
+package com.slotizen.venus.model;
 
 public class BusinessHoursRequest {
     public Hours businessHours;
@@ -18,5 +18,4 @@ public class BusinessHoursRequest {
         public String openTime;   // format HH:mm
         public String closeTime;  // format HH:mm
     }
-  
 }

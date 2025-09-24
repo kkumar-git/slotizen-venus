@@ -1,21 +1,28 @@
 package com.slotizen.venus.service.impl;
 
-import com.slotizen.venus.dto.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.slotizen.venus.dto.ApiResponse;
+import com.slotizen.venus.dto.JwtResponse;
+import com.slotizen.venus.dto.LoginRequest;
+import com.slotizen.venus.dto.RegisterRequest;
+import com.slotizen.venus.dto.TokenRefreshRequest;
+import com.slotizen.venus.model.OtpToken;
 import com.slotizen.venus.model.Role;
 import com.slotizen.venus.model.User;
 import com.slotizen.venus.repository.RoleRepository;
 import com.slotizen.venus.repository.UserRepository;
 import com.slotizen.venus.security.JwtService;
-import com.slotizen.venus.model.OtpToken;
-import com.slotizen.venus.service.OtpService;
 import com.slotizen.venus.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import com.slotizen.venus.service.OtpService;
 
 @Service
 @Transactional
@@ -36,8 +43,6 @@ public class AuthServiceImpl implements AuthService {
             request.getLastName(),
             request.getEmail(),
             request.getPhone(),
-            request.getCompanyName(),
-            request.getBusinessType(),
             passwordEncoder.encode(request.getPassword())
         );
         // Assign USER role by default
@@ -69,8 +74,18 @@ public class AuthServiceImpl implements AuthService {
         if (!user.isEnabled() || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return new JwtResponse(false, "Invalid credentials or user not enabled", null, null, null);
         }
-        String accessToken = jwtService.generateToken(user.getEmail(), false);
-        String refreshToken = jwtService.generateToken(user.getEmail(), true);
+        String accessToken = jwtService.generateToken(
+        	    user.getId(),
+        	    user.getEmail(),
+        	    user.getRoles().stream().map(r -> r.getName()).toList(),
+        	    false
+        	);
+        	String refreshToken = jwtService.generateToken(
+        	    user.getId(),
+        	    user.getEmail(),
+        	    List.of("REFRESH"), // or same roles
+        	    true
+        	);
         return new JwtResponse(true, "Login successful", accessToken, refreshToken, null);
     }
 

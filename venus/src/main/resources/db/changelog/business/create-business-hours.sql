@@ -32,3 +32,5 @@ CREATE TABLE business_hours (
     sunday_open_time TIME,
     sunday_close_time TIME
 );
+-- Index to quickly find business hours by business_id
+CREATE INDEX idx_business_hours_business_id ON business_hours(business_id);

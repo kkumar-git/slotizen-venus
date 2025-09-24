@@ -1,5 +1,6 @@
 --liquibase formatted sql
---changeset kkumar:auth
+--changeset kkumar:user_roles
+
 CREATE TABLE IF NOT EXISTS user_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
@@ -7,3 +8,4 @@ CREATE TABLE IF NOT EXISTS user_roles (
     CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_role FOREIGN KEY(role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
+CREATE INDEX idx_user_roles_role ON user_roles(role_id);

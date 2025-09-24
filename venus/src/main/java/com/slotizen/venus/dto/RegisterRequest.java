@@ -20,12 +20,6 @@ public class RegisterRequest {
     @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "Invalid phone number format")
     private String phone;
 
-    @NotBlank(message = "Company name is required")
-    private String companyName;
-
-    @NotBlank(message = "Business type is required")
-    private String businessType;
-
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
@@ -40,8 +34,6 @@ public class RegisterRequest {
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
-        this.companyName = companyName;
-        this.businessType = businessType;
         this.password = password;
     }
 
@@ -76,22 +68,6 @@ public class RegisterRequest {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getBusinessType() {
-        return businessType;
-    }
-
-    public void setBusinessType(String businessType) {
-        this.businessType = businessType;
     }
 
     public String getPassword() {

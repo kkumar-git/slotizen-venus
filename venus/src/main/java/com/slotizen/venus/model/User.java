@@ -25,12 +25,6 @@ public class User {
     private String phone;
 
     @Column(nullable = false)
-    private String companyName;
-
-    @Column(nullable = false)
-    private String businessType;
-
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -54,14 +48,11 @@ public class User {
     public User() {}
 
     // Constructor with required fields
-    public User(String firstName, String lastName, String email, String phone, 
-                String companyName, String businessType, String password) {
+    public User(String firstName, String lastName, String email, String phone, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
-        this.companyName = companyName;
-        this.businessType = businessType;
         this.password = password;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -107,23 +98,7 @@ public class User {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getBusinessType() {
-        return businessType;
-    }
-
-    public void setBusinessType(String businessType) {
-        this.businessType = businessType;
-    }
-
+    
     public String getPassword() {
         return password;
     }
