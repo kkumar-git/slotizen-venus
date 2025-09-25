@@ -1,22 +1,20 @@
-package com.slotizen.venus.service.storage;
+package com.slotizen.venus.service;
 
-import com.slotizen.venus.config.StorageProperties;
-import com.slotizen.venus.service.StorageService;
-import com.slotizen.venus.util.FileValidationUtil;
-import org.springframework.context.annotation.Profile;
+import java.time.Instant;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.slotizen.venus.config.StorageProperties;
+import com.slotizen.venus.util.FileValidationUtil;
+
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.time.Instant;
-import java.util.UUID;
-
-@Service
-@Profile("prod")
 public class S3StorageService implements StorageService {
 
     private final StorageProperties props;

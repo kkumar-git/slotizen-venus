@@ -1,4 +1,8 @@
 spring:
+  config:
+    activate:
+     on-profile: dev
+
   application:
     name: venus
 
@@ -91,3 +95,5 @@ app:
       - image/jpg
       - image/webp
       - image/gif
+	  
+	  

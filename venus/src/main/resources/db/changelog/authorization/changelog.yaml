@@ -15,3 +15,7 @@ databaseChangeLog:
   - include:
       file: otp_tokens.sql
       relativeToChangelogFile: true
+
+  - include:
+      file: users_business.sql
+      relativeToChangelogFile: true
