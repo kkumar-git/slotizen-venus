@@ -3,7 +3,6 @@ package com.slotizen.venus.service;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.slotizen.venus.config.StorageProperties;

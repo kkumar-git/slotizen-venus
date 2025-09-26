@@ -46,8 +46,8 @@ public class AuthServiceImpl implements AuthService {
             passwordEncoder.encode(request.getPassword())
         );
         // Assign USER role by default
-        Role userRole = roleRepository.findByName("ROLE_USER")
-            .orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
+        Role userRole = roleRepository.findByName("ROLE_BUSINESS_OWNER")
+                .orElseThrow(() -> new RuntimeException("Default role ROLE_CLIENT not found in DB"));
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
         user.setRoles(roles);

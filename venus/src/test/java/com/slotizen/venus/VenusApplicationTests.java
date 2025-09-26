@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.slotizen.venus.config.TestMailConfig;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @SpringBootTest
 @Import(TestMailConfig.class)
 class VenusApplicationTests {

@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:invalid
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: false
+
+# JWT configuration for tests
+jwt:
+ secret: test_jwt_secret_1234567890abcdefABCDEF1234567890
+ access-token-expiration-ms: 60000    # 1 minute
+ refresh-token-expiration-ms: 300000  # 5 minutes

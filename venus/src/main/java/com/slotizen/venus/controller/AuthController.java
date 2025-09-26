@@ -57,10 +57,10 @@ public class AuthController {
                 response.put("success", true);
                 response.put("message", "OTP verified successfully");
                 
-                String accessToken = jwtService.generateToken(request.getEmail(), false);
+               /* String accessToken = jwtService.generateToken(request.getEmail(), false);
                 String refreshToken = jwtService.generateToken(request.getEmail(), true);
                 response.put("accessToken", accessToken);
-                response.put("refreshToken", refreshToken);
+                response.put("refreshToken", refreshToken);*/
                 return ResponseEntity.ok(response);
             } else {
                 Map<String, Object> response = new HashMap<>();

@@ -1,7 +1,6 @@
 spring:
-  config:
-    activate:
-     on-profile: dev
+  profiles:
+    active: dev
 
   application:
     name: venus
@@ -73,11 +72,11 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-# JWT Configuration
+# Default JWT configuration with environment variable fallback
 jwt:
-  secret: ${JWT_SECRET:u8Jk2n4pQwErTyUiOpAsDfGhJkLzXcVb12345678}
-  access-token-expiration-ms: 3600000 # 1 hour
-  refresh-token-expiration-ms: 604800000 # 7 days
+ secret: ${JWT_SECRET:u8Jk2n4pQwErTyUiOpAsDfGhJkLzXcVb12345678}
+ access-token-expiration-ms: ${JWT_ACCESS_TOKEN_EXPIRATION_MS:3600000} # 1 hour
+ refresh-token-expiration-ms: ${JWT_REFRESH_TOKEN_EXPIRATION_MS:604800000} # 7 days
 
 # CORS Configuration
 cors:
@@ -95,5 +94,3 @@ app:
       - image/jpg
       - image/webp
       - image/gif
-	  
-	  

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,13 +25,18 @@ import com.slotizen.venus.service.BusinessService;
 import com.slotizen.venus.util.SecurityUtils;
 
 @RestController
-@RequestMapping("/api/business")
+@RequestMapping("/business")
 public class BusinessController {
     @Autowired private BusinessService businessService;
 
     @PostMapping("/profile")
     public ResponseEntity<BusinessProfileResponse> createProfile(@RequestBody BusinessProfileRequest request) {
         return ResponseEntity.ok(businessService.createOrUpdateProfile(request, null));
+    }
+    
+    @GetMapping("/profile")
+    public ResponseEntity<BusinessProfileResponse> geProfile() {
+        return ResponseEntity.ok(businessService.getBusinessProfile());
     }
 
     @PutMapping("/profile/{businessId}")

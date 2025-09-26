@@ -17,5 +17,21 @@ databaseChangeLog:
       relativeToChangelogFile: true
 
   - include:
-      file: users_business.sql
+      file: permission.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: role_permissions.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: insert_roles.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: insert_permission.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: insert_role_permissions.sql
       relativeToChangelogFile: true

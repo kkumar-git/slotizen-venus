@@ -2,7 +2,7 @@
 --changeset kkumar:business_hours
 CREATE TABLE business_hours (
     id UUID PRIMARY KEY,
-    business_id UUID NOT NULL REFERENCES business_profiles(business_id),
+    business_id UUID NOT NULL REFERENCES business_profile(business_id),
 
     monday_is_open BOOLEAN,
     monday_open_time TIME,

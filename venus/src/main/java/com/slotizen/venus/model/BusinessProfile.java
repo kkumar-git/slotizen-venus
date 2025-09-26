@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "business_profiles")
+@Table(name = "business_profile")
 public class BusinessProfile {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

@@ -10,12 +10,15 @@ import java.util.*;
 
 @Service
 public class JwtService {
-    @Value("${jwt.secret}")
-    private String secret;
-    @Value("${jwt.access-token-expiration-ms}")
-    private long accessTokenExpiration;
-    @Value("${jwt.refresh-token-expiration-ms}")
-    private long refreshTokenExpiration;
+	
+	@Value("${jwt.secret}")
+	private String secret;
+
+	@Value("${jwt.access-token-expiration-ms}")
+	private long accessTokenExpiration;
+
+	@Value("${jwt.refresh-token-expiration-ms}")
+	private long refreshTokenExpiration;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());

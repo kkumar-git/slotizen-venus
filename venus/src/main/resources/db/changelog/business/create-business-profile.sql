@@ -1,23 +1,25 @@
 --liquibase formatted sql
---changeset kkumar:business_profiles
+--changeset kkumar:business_profile
 
-CREATE TABLE business_profiles (
-    business_id UUID PRIMARY KEY,
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE TABLE IF NOT EXISTS business_profile (
+    business_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     business_name VARCHAR(255) NOT NULL,
-    business_type VARCHAR(100) NOT NULL,
+    logo_url VARCHAR(500),
+    business_type VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     address VARCHAR(255) NOT NULL,
-    city VARCHAR(100),
-    state VARCHAR(100),
-    zip_code VARCHAR(20),
-    phone VARCHAR(30),
+    city VARCHAR(255),
+    state VARCHAR(255),
+    zip_code VARCHAR(50),
+    phone VARCHAR(50),
     website VARCHAR(255),
     timezone VARCHAR(100),
     slug VARCHAR(255) NOT NULL UNIQUE,
-    created_at TIMESTAMPTZ NOT NULL
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-CREATE INDEX idx_business_profiles_name ON business_profiles (business_name);
-CREATE INDEX idx_business_profiles_city ON business_profiles (city);
-CREATE INDEX idx_business_profiles_state ON business_profiles (state);
-CREATE INDEX idx_business_profiles_zip ON business_profiles (zip_code);
-CREATE INDEX idx_business_profiles_city_state ON business_profiles (city, state);
+CREATE INDEX idx_business_profile_name ON business_profile (business_name);
+CREATE INDEX idx_business_profile_city ON business_profile (city);
+CREATE INDEX idx_business_profile_state ON business_profile (state);
+CREATE INDEX idx_business_profile_zip ON business_profile (zip_code);
+CREATE INDEX idx_business_profile_city_state ON business_profile (city, state);

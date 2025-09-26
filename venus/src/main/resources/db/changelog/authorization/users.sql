@@ -12,11 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
--- Index for first_name
-CREATE INDEX idx_users_first_name ON users(first_name);
 
--- Index for last_name
-CREATE INDEX idx_users_last_name ON users(last_name);
-
--- Composite index for first_name + last_name
-CREATE INDEX idx_users_full_name ON users(first_name, last_name);
+-- Indexes
+CREATE INDEX idx_users_phone ON users(phone);
+CREATE INDEX idx_users_enabled ON users(enabled);

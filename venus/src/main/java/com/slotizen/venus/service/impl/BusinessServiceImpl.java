@@ -21,6 +21,7 @@ import com.slotizen.venus.repository.BusinessHoursRepository;
 import com.slotizen.venus.repository.BusinessProfileRepository;
 import com.slotizen.venus.service.BusinessService;
 import com.slotizen.venus.service.StorageService;
+import com.slotizen.venus.util.SecurityUtils;
 
 @Service
 @Transactional
@@ -55,6 +56,26 @@ public class BusinessServiceImpl implements BusinessService {
         resp.data.slug = profile.getSlug();
         resp.data.createdAt = profile.getCreatedAt();
         return resp;
+    }
+    
+    public BusinessProfileResponse getBusinessProfile() {
+    	Long userId = SecurityUtils.getCurrentUserId();
+    	BusinessProfileResponse resp = new BusinessProfileResponse();
+    	BusinessProfile profile = businessProfileRepository.findByUserId(userId);
+        if (profile == null) {
+        	return resp;
+        }else {
+			
+			resp.success = true;
+			resp.message = "Business profile fetched successfully";
+			resp.data = new BusinessProfileResponse.Data();
+			resp.data.businessId = profile.getBusinessId();
+			resp.data.businessName = profile.getBusinessName();
+			resp.data.slug = profile.getSlug();
+			resp.data.createdAt = profile.getCreatedAt();
+			return resp;
+        }
+    	
     }
 
     @Override

@@ -3,6 +3,13 @@ package com.slotizen.venus.dto;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class BusinessProfileResponse {
     public boolean success;
     public String message;
@@ -13,6 +20,7 @@ public class BusinessProfileResponse {
         public String businessName;
         public String slug;
         public ZonedDateTime createdAt;
+        public String logoUrl;
     }
-    // Getters and setters
+    
 }

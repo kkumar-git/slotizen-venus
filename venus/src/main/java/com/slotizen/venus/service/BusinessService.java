@@ -11,6 +11,7 @@ import com.slotizen.venus.dto.BusinessProfileResponse;
 import com.slotizen.venus.dto.LogoUploadResponse;
 
 public interface BusinessService {
+	BusinessProfileResponse getBusinessProfile();
     BusinessProfileResponse createOrUpdateProfile(BusinessProfileRequest request, UUID businessId);
     BusinessHoursResponse setupBusinessHours(UUID businessId, BusinessHoursRequest request);
     LogoUploadResponse uploadLogo(Long userId, String businessId, MultipartFile file);
