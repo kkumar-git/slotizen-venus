@@ -1,0 +1,11 @@
+# JWT configuration for dev (overrides defaults)
+jwt:
+ secret: ${JWT_SECRET:u8Jk2n4pQwErTyUiOpAsDfGhJkLzXcVb12345678}
+ access-token-expiration-ms: 3600000
+ refresh-token-expiration-ms: 604800000
+app:
+  storage:
+    provider: local
+    local:
+      base-dir: uploads
+      public-base-url: http://localhost:8081/static

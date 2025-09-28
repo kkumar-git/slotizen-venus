@@ -1,0 +1,13 @@
+databaseChangeLog:
+
+  - include:
+      file: create-business-profile.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: create-business-hours.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: user_business.sql
+      relativeToChangelogFile: true	  

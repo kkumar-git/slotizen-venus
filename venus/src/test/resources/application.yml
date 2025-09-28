@@ -1,0 +1,47 @@
+spring:
+  # H2 In-Memory Database for Testing
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # JPA Configuration for Tests
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # H2 Console (useful for debugging tests)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Disable Liquibase for tests (using create-drop instead)
+  liquibase:
+    enabled: false
+
+# JWT Configuration for tests
+jwt:
+  secret: ${JWT_SECRET:u8Jk2n4pQwErTyUiOpAsDfGhJkLzXcVb12345678}
+  access-token-expiration-ms: 3600000    # 1 hour
+  refresh-token-expiration-ms: 604800000 # 7 days
+
+# CORS Configuration for tests
+cors:
+  allowed-origins: "http://localhost:3000"
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "Authorization,Content-Type,Cache-Control"
+  allow-credentials: true
+
+# Logging for tests
+logging:
+  level:
+    com.slotizen.venus: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: INFO

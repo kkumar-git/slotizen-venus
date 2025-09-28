@@ -1,0 +1,8 @@
+app:
+  storage:
+    provider: s3
+    s3:
+      bucket: your-bucket-name
+      public-base-url: https://your-cdn-or-bucket-url
+      region: ap-south-1
+      prefix: uploads   # optional key prefix
