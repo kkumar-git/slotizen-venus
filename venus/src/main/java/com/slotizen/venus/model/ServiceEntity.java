@@ -37,6 +37,9 @@ public class ServiceEntity {
     
     @Column(nullable = false)
     private String businessId;
+
+    @Column(name = "department_id")
+    private Long departmentId;
     
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -111,6 +114,14 @@ public class ServiceEntity {
     
     public void setBusinessId(String businessId) {
         this.businessId = businessId;
+    }
+    
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+    
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
     
     public LocalDateTime getCreatedAt() {

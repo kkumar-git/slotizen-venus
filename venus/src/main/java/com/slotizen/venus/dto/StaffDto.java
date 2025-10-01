@@ -19,6 +19,7 @@ public class StaffDto {
     private Set<String> services;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long departmentId;
     
     // Constructors
     public StaffDto() {}
@@ -135,5 +136,13 @@ public class StaffDto {
     
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+    
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

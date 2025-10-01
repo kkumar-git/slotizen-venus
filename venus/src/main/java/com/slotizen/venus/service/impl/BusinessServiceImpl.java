@@ -24,10 +24,12 @@ import com.slotizen.venus.model.BusinessProfile;
 import com.slotizen.venus.model.DailyHours;
 import com.slotizen.venus.model.ServiceEntity;
 import com.slotizen.venus.model.StaffMember;
+import com.slotizen.venus.model.UserBusiness;
 import com.slotizen.venus.repository.BusinessHoursRepository;
 import com.slotizen.venus.repository.BusinessProfileRepository;
 import com.slotizen.venus.repository.ServiceRepository;
 import com.slotizen.venus.repository.StaffMemberRepository;
+import com.slotizen.venus.repository.UserBusinessRepository;
 import com.slotizen.venus.service.BusinessService;
 import com.slotizen.venus.service.StorageService;
 import com.slotizen.venus.util.SecurityUtils;
@@ -40,6 +42,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Autowired private BusinessHoursRepository businessHoursRepository;
     @Autowired private ServiceRepository serviceRepository;
     @Autowired private StaffMemberRepository staffMemberRepository;
+    @Autowired private UserBusinessRepository userBusinessRepository;
     @Autowired
     private StorageService storageService;
 
@@ -61,7 +64,22 @@ public class BusinessServiceImpl implements BusinessService {
         profile.setSlug(generateSlug(request.businessName));
         profile.setCompetitionLevel(1);
         if (profile.getCreatedAt() == null) profile.setCreatedAt(ZonedDateTime.now());
+        
+        // Save the business profile
         businessProfileRepository.save(profile);
+        
+        // Create user_business mapping for new profiles
+        if (businessId == null) {
+            Long currentUserId = SecurityUtils.getCurrentUserId();
+            if (currentUserId != null) {
+                // Check if mapping already exists to avoid duplicates
+                if (!userBusinessRepository.existsByUserIdAndBusinessId(currentUserId, profile.getBusinessId())) {
+                    UserBusiness userBusiness = new UserBusiness(currentUserId, profile.getBusinessId());
+                    userBusinessRepository.save(userBusiness);
+                }
+            }
+        }
+        
         BusinessProfileResponse resp = new BusinessProfileResponse();
         resp.businessId = profile.getBusinessId();
         resp.success = true;
@@ -199,6 +217,7 @@ public class BusinessServiceImpl implements BusinessService {
         service.setPrice(dto.getPrice());
         service.setCategory(dto.getCategory());
         service.setBusinessId(businessId);
+        service.setDepartmentId(dto.getDepartmentId());
         return service;
     }
 
@@ -226,6 +245,10 @@ public class BusinessServiceImpl implements BusinessService {
         
         if (request.getServices() != null && !request.getServices().isEmpty()) {
             staffMember.setServices(request.getServices());
+        }
+        
+        if (request.getDepartmentId() != null) {
+            staffMember.setDepartmentId(request.getDepartmentId());
         }
         
         StaffMember saved = staffMemberRepository.save(staffMember);
@@ -271,6 +294,10 @@ public class BusinessServiceImpl implements BusinessService {
             staffMember.setServices(request.getServices());
         }
         
+        if (request.getDepartmentId() != null) {
+            staffMember.setDepartmentId(request.getDepartmentId());
+        }
+        
         StaffMember updated = staffMemberRepository.save(staffMember);
         return convertToStaffDto(updated);
     }
@@ -293,7 +320,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
     
     private StaffDto convertToStaffDto(StaffMember staffMember) {
-        return new StaffDto(
+        StaffDto dto = new StaffDto(
             staffMember.getId(),
             staffMember.getFirstName(),
             staffMember.getLastName(),
@@ -307,6 +334,8 @@ public class BusinessServiceImpl implements BusinessService {
             staffMember.getCreatedAt(),
             staffMember.getUpdatedAt()
         );
+        dto.setDepartmentId(staffMember.getDepartmentId());
+        return dto;
     }
     
     @Override

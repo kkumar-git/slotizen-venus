@@ -48,6 +48,9 @@ public class StaffMember {
     @Column(nullable = false)
     private String businessId;
     
+    @Column(name = "department_id")
+    private Long departmentId;
+    
     @Column(nullable = false)
     private LocalDateTime hireDate = LocalDateTime.now();
     
@@ -140,6 +143,14 @@ public class StaffMember {
     
     public void setBusinessId(String businessId) {
         this.businessId = businessId;
+    }
+    
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+    
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
     
     public LocalDateTime getHireDate() {

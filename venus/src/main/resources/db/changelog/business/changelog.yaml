@@ -22,4 +22,12 @@ databaseChangeLog:
 
   - include:
       file: create-demo-requests-table.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: create-departments-table.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: add-department-references.sql
       relativeToChangelogFile: true	  

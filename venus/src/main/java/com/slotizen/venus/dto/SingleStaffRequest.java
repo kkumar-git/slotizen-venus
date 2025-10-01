@@ -32,6 +32,8 @@ public class SingleStaffRequest {
     
     private Set<String> services;
     
+    private Long departmentId;
+    
     // Constructors
     public SingleStaffRequest() {}
     
@@ -91,5 +93,13 @@ public class SingleStaffRequest {
     
     public void setServices(Set<String> services) {
         this.services = services;
+    }
+    
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+    
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

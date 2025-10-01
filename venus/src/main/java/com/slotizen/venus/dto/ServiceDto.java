@@ -28,6 +28,8 @@ public class ServiceDto {
     
     private String id; // Optional for updates
     
+    private Long departmentId;
+    
     // Constructors
     public ServiceDto() {}
     
@@ -86,5 +88,13 @@ public class ServiceDto {
     
     public void setId(String id) {
         this.id = id;
+    }
+    
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+    
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

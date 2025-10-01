@@ -26,6 +26,9 @@ import com.slotizen.venus.dto.BusinessHoursRequest;
 import com.slotizen.venus.dto.BusinessHoursResponse;
 import com.slotizen.venus.dto.BusinessProfileRequest;
 import com.slotizen.venus.dto.BusinessProfileResponse;
+import com.slotizen.venus.dto.DepartmentDto;
+import com.slotizen.venus.dto.DepartmentResponse;
+import com.slotizen.venus.dto.DepartmentsRequest;
 import com.slotizen.venus.dto.LogoUploadResponse;
 import com.slotizen.venus.dto.ServicesRequest;
 import com.slotizen.venus.dto.SingleStaffRequest;
@@ -34,6 +37,7 @@ import com.slotizen.venus.dto.StaffRequest;
 import com.slotizen.venus.dto.StaffResponse;
 import com.slotizen.venus.model.ServiceEntity;
 import com.slotizen.venus.service.BusinessService;
+import com.slotizen.venus.service.DepartmentService;
 import com.slotizen.venus.util.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -43,6 +47,9 @@ import jakarta.validation.Valid;
 public class BusinessController {
     @Autowired
     private BusinessService businessService;
+    
+    @Autowired
+    private DepartmentService departmentService;
 
     @PostMapping("/profile")
     public ResponseEntity<BusinessProfileResponse> createProfile(@RequestBody BusinessProfileRequest request) {
@@ -140,7 +147,7 @@ public class BusinessController {
     
     @PostMapping("/{businessId}/staff")
     public ResponseEntity<StaffResponse> createStaff(
-            @PathVariable String businessId,
+            @PathVariable("businessId") String businessId,
             @Valid @RequestBody StaffRequest request,
             Authentication authentication) {
         try {
@@ -171,7 +178,7 @@ public class BusinessController {
     
     @PostMapping("/{businessId}/staff/single")
     public ResponseEntity<StaffResponse> createStaffMember(
-            @PathVariable String businessId,
+            @PathVariable("businessId") String businessId,
             @Valid @RequestBody SingleStaffRequest request,
             Authentication authentication) {
         try {
@@ -196,7 +203,7 @@ public class BusinessController {
     
     @GetMapping("/{businessId}/staff")
     public ResponseEntity<StaffResponse> getAllStaff(
-            @PathVariable String businessId,
+            @PathVariable("businessId") String businessId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -216,8 +223,8 @@ public class BusinessController {
     
     @GetMapping("/{businessId}/staff/{staffId}")
     public ResponseEntity<StaffResponse> getStaffById(
-            @PathVariable String businessId,
-            @PathVariable Long staffId,
+            @PathVariable("businessId") String businessId,
+            @PathVariable("staffId") Long staffId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -240,8 +247,8 @@ public class BusinessController {
     
     @PutMapping("/{businessId}/staff/{staffId}")
     public ResponseEntity<StaffResponse> updateStaffMember(
-            @PathVariable String businessId,
-            @PathVariable Long staffId,
+            @PathVariable("businessId") String businessId,
+            @PathVariable("staffId") Long staffId,
             @Valid @RequestBody SingleStaffRequest request,
             Authentication authentication) {
         try {
@@ -265,8 +272,8 @@ public class BusinessController {
     
     @DeleteMapping("/{businessId}/staff/{staffId}")
     public ResponseEntity<StaffResponse> deleteStaffMember(
-            @PathVariable String businessId,
-            @PathVariable Long staffId,
+            @PathVariable("businessId") String businessId,
+            @PathVariable("staffId") Long staffId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -289,8 +296,8 @@ public class BusinessController {
     
     @GetMapping("/{businessId}/staff/by-service")
     public ResponseEntity<StaffResponse> getStaffByService(
-            @PathVariable String businessId,
-            @RequestParam String serviceId,
+            @PathVariable("businessId") String businessId,
+            @RequestParam("serviceId") String serviceId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -308,8 +315,141 @@ public class BusinessController {
         }
     }
     
+    // Department Management Endpoints
+    
+    @PostMapping("/{businessId}/departments")
+    public ResponseEntity<?> createDepartments(
+            @PathVariable(name = "businessId") String businessId,
+            @Valid @RequestBody DepartmentsRequest request,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            List<DepartmentResponse> departments = departmentService.createDepartments(businessId, request.getDepartments());
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of(
+                    "message", "Departments created successfully",
+                    "departments", departments
+                ));
+                
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", e.getMessage()));
+        }
+    }
+    
+    @GetMapping("/{businessId}/departments")
+    public ResponseEntity<?> getDepartments(
+            @PathVariable(name = "businessId") String businessId,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            List<DepartmentResponse> departments = departmentService.getDepartmentsByBusinessId(businessId);
+            return ResponseEntity.ok(Map.of("departments", departments));
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Failed to retrieve departments"));
+        }
+    }
+    
+    @GetMapping("/departments/{departmentId}")
+    public ResponseEntity<?> getDepartmentById(
+            @PathVariable(name = "departmentId") Long departmentId,
+            @RequestParam String businessId,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            DepartmentResponse department = departmentService.getDepartmentById(departmentId, businessId);
+            return ResponseEntity.ok(department);
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", e.getMessage()));
+        }
+    }
+    
+    @PutMapping("/departments/{departmentId}")
+    public ResponseEntity<?> updateDepartment(
+            @PathVariable(name = "departmentId") Long departmentId,
+            @RequestParam String businessId,
+            @Valid @RequestBody DepartmentDto request,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            DepartmentResponse department = departmentService.updateDepartment(departmentId, businessId, request);
+            return ResponseEntity.ok(department);
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", e.getMessage()));
+        }
+    }
+    
+    @DeleteMapping("/departments/{departmentId}")
+    public ResponseEntity<?> deleteDepartment(
+            @PathVariable(name = "departmentId") Long departmentId,
+            @RequestParam(name = "businessId") String businessId,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            departmentService.deleteDepartment(departmentId, businessId);
+            return ResponseEntity.ok(Map.of("message", "Department deleted successfully"));
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/departments/{departmentId}/status")
+    public ResponseEntity<?> toggleDepartmentStatus(
+            @PathVariable Long departmentId,
+            @RequestParam String businessId,
+            @RequestParam Boolean isActive,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            DepartmentResponse department = departmentService.toggleDepartmentStatus(departmentId, businessId, isActive);
+            return ResponseEntity.ok(department);
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", e.getMessage()));
+        }
+    }
+    
     private SingleStaffRequest convertToSingleStaffRequest(StaffRequest.StaffMemberRequest member) {
-        return new SingleStaffRequest(
+        SingleStaffRequest request = new SingleStaffRequest(
             member.getFirstName(),
             member.getLastName(), 
             member.getEmail(),
@@ -317,5 +457,7 @@ public class BusinessController {
             member.getRole(),
             member.getServices()
         );
+        request.setDepartmentId(member.getDepartmentId());
+        return request;
     }
 }
