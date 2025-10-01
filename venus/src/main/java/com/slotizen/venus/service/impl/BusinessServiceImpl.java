@@ -180,8 +180,9 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public List<ServiceEntity> saveServices(String businessId, List<ServiceDto> serviceDtos) {
         // Clear existing services for this business (replace all)
+        //UUID businessUUID = UUID.fromString(businessId);
         serviceRepository.deleteByBusinessId(businessId);
-        
+
         // Convert DTOs to entities and save
         List<ServiceEntity> services = serviceDtos.stream()
             .map(dto -> convertToEntity(dto, businessId))
@@ -316,7 +317,7 @@ public class BusinessServiceImpl implements BusinessService {
             
             if (profileOpt.isPresent()) {
                 BusinessProfile profile = profileOpt.get();
-                
+                //UUID businessUUID = profile.getBusinessId();
                 // Check if business setup is complete
                 boolean hasServices = !serviceRepository.findByBusinessId(businessId).isEmpty();
                 boolean hasStaff = !staffMemberRepository.findByBusinessIdOrderByCreatedAtDesc(businessId).isEmpty();

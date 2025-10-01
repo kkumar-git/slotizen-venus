@@ -78,7 +78,7 @@ public class BusinessController {
     }
 
     @PostMapping("/{businessId}/hours")
-    public ResponseEntity<BusinessHoursResponse> setupHours(@PathVariable UUID businessId,
+    public ResponseEntity<BusinessHoursResponse> setupHours(@PathVariable("businessId") UUID businessId,
             @RequestBody BusinessHoursRequest request) {
         return ResponseEntity.ok(businessService.setupBusinessHours(businessId, request));
     }
@@ -95,7 +95,7 @@ public class BusinessController {
 
     @PostMapping("/{businessId}/services")
     public ResponseEntity<?> saveServices(
-            @PathVariable String businessId,
+            @PathVariable("businessId") String businessId,
             @Valid @RequestBody ServicesRequest request,
             Authentication authentication) {
         

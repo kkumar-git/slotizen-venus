@@ -18,4 +18,8 @@ databaseChangeLog:
 
   - include:
       file: create-staff-tables.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: create-demo-requests-table.sql
       relativeToChangelogFile: true	  
