@@ -1,17 +1,23 @@
 package com.slotizen.venus.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,8 +27,16 @@ import com.slotizen.venus.dto.BusinessHoursResponse;
 import com.slotizen.venus.dto.BusinessProfileRequest;
 import com.slotizen.venus.dto.BusinessProfileResponse;
 import com.slotizen.venus.dto.LogoUploadResponse;
+import com.slotizen.venus.dto.ServicesRequest;
+import com.slotizen.venus.dto.SingleStaffRequest;
+import com.slotizen.venus.dto.StaffDto;
+import com.slotizen.venus.dto.StaffRequest;
+import com.slotizen.venus.dto.StaffResponse;
+import com.slotizen.venus.model.ServiceEntity;
 import com.slotizen.venus.service.BusinessService;
 import com.slotizen.venus.util.SecurityUtils;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/business")
@@ -79,7 +93,229 @@ public class BusinessController {
         return businessService.uploadLogo(userId, businessId, file);
     }
 
+    @PostMapping("/{businessId}/services")
+    public ResponseEntity<?> saveServices(
+            @PathVariable String businessId,
+            @Valid @RequestBody ServicesRequest request,
+            Authentication authentication) {
+        
+        try {
+            // Validate business ownership/access
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            // Save services
+            List<ServiceEntity> savedServices = businessService.saveServices(businessId, request.getServices());
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Services saved successfully",
+                "services", savedServices
+            ));
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Access denied"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Failed to save services"));
+        }
+    }
+
+    private void validateBusinessAccess(Long userId, String businessId) {
+        // TODO: Implement business ownership validation
+        // For now, just check if user is authenticated
+        if (userId == null) {
+            throw new SecurityException("User not authenticated");
+        }
+    }
+
     private Long extractUserId(Authentication auth) {
         return SecurityUtils.getCurrentUserId();
+    }
+    
+    // Staff Management Endpoints
+    
+    @PostMapping("/{businessId}/staff")
+    public ResponseEntity<StaffResponse> createStaff(
+            @PathVariable String businessId,
+            @Valid @RequestBody StaffRequest request,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            List<StaffDto> createdStaff = new ArrayList<>();
+            for (StaffRequest.StaffMemberRequest staffMember : request.getStaff()) {
+                SingleStaffRequest singleRequest = convertToSingleStaffRequest(staffMember);
+                StaffDto created = businessService.createStaffMember(businessId, singleRequest);
+                createdStaff.add(created);
+            }
+            
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(StaffResponse.success("Staff members created successfully", createdStaff));
+                
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(StaffResponse.error("Access denied"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(StaffResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(StaffResponse.error("Failed to create staff members"));
+        }
+    }
+    
+    @PostMapping("/{businessId}/staff/single")
+    public ResponseEntity<StaffResponse> createStaffMember(
+            @PathVariable String businessId,
+            @Valid @RequestBody SingleStaffRequest request,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            StaffDto staffDto = businessService.createStaffMember(businessId, request);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(StaffResponse.success("Staff member created successfully", staffDto));
+                
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(StaffResponse.error("Access denied"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(StaffResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(StaffResponse.error("Failed to create staff member"));
+        }
+    }
+    
+    @GetMapping("/{businessId}/staff")
+    public ResponseEntity<StaffResponse> getAllStaff(
+            @PathVariable String businessId,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            List<StaffDto> staff = businessService.getAllStaff(businessId);
+            return ResponseEntity.ok(StaffResponse.success("Staff retrieved successfully", staff));
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(StaffResponse.error("Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(StaffResponse.error("Failed to retrieve staff"));
+        }
+    }
+    
+    @GetMapping("/{businessId}/staff/{staffId}")
+    public ResponseEntity<StaffResponse> getStaffById(
+            @PathVariable String businessId,
+            @PathVariable Long staffId,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            StaffDto staffDto = businessService.getStaffById(businessId, staffId);
+            return ResponseEntity.ok(StaffResponse.success("Staff member retrieved successfully", staffDto));
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(StaffResponse.error("Access denied"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(StaffResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(StaffResponse.error("Failed to retrieve staff member"));
+        }
+    }
+    
+    @PutMapping("/{businessId}/staff/{staffId}")
+    public ResponseEntity<StaffResponse> updateStaffMember(
+            @PathVariable String businessId,
+            @PathVariable Long staffId,
+            @Valid @RequestBody SingleStaffRequest request,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            StaffDto staffDto = businessService.updateStaffMember(businessId, staffId, request);
+            return ResponseEntity.ok(StaffResponse.success("Staff member updated successfully", staffDto));
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(StaffResponse.error("Access denied"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(StaffResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(StaffResponse.error("Failed to update staff member"));
+        }
+    }
+    
+    @DeleteMapping("/{businessId}/staff/{staffId}")
+    public ResponseEntity<StaffResponse> deleteStaffMember(
+            @PathVariable String businessId,
+            @PathVariable Long staffId,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            businessService.deleteStaffMember(businessId, staffId);
+            return ResponseEntity.ok(StaffResponse.success("Staff member deleted successfully"));
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(StaffResponse.error("Access denied"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(StaffResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(StaffResponse.error("Failed to delete staff member"));
+        }
+    }
+    
+    @GetMapping("/{businessId}/staff/by-service")
+    public ResponseEntity<StaffResponse> getStaffByService(
+            @PathVariable String businessId,
+            @RequestParam String serviceId,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            List<StaffDto> staff = businessService.getStaffByService(businessId, serviceId);
+            return ResponseEntity.ok(StaffResponse.success("Staff retrieved successfully", staff));
+            
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(StaffResponse.error("Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(StaffResponse.error("Failed to retrieve staff"));
+        }
+    }
+    
+    private SingleStaffRequest convertToSingleStaffRequest(StaffRequest.StaffMemberRequest member) {
+        return new SingleStaffRequest(
+            member.getFirstName(),
+            member.getLastName(), 
+            member.getEmail(),
+            member.getPhone(),
+            member.getRole(),
+            member.getServices()
+        );
     }
 }

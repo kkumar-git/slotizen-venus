@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class BusinessProfileResponse {
     public boolean success;
     public String message;
+    public UUID businessId;
     public Data data;
 
     public static class Data {

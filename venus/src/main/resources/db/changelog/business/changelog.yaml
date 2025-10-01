@@ -10,4 +10,12 @@ databaseChangeLog:
 
   - include:
       file: user_business.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: create-business-service.sql
+      relativeToChangelogFile: true	  
+
+  - include:
+      file: create-staff-tables.sql
       relativeToChangelogFile: true	  
