@@ -30,4 +30,8 @@ databaseChangeLog:
 
   - include:
       file: add-department-references.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: update-business-hours-time-precision.sql
       relativeToChangelogFile: true	  

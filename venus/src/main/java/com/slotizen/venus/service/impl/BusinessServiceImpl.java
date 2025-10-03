@@ -1,7 +1,9 @@
 package com.slotizen.venus.service.impl;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,19 +39,25 @@ import com.slotizen.venus.util.SecurityUtils;
 @Service
 @Transactional
 public class BusinessServiceImpl implements BusinessService {
-    
-    @Autowired private BusinessProfileRepository businessProfileRepository;
-    @Autowired private BusinessHoursRepository businessHoursRepository;
-    @Autowired private ServiceRepository serviceRepository;
-    @Autowired private StaffMemberRepository staffMemberRepository;
-    @Autowired private UserBusinessRepository userBusinessRepository;
+
+    @Autowired
+    private BusinessProfileRepository businessProfileRepository;
+    @Autowired
+    private BusinessHoursRepository businessHoursRepository;
+    @Autowired
+    private ServiceRepository serviceRepository;
+    @Autowired
+    private StaffMemberRepository staffMemberRepository;
+    @Autowired
+    private UserBusinessRepository userBusinessRepository;
     @Autowired
     private StorageService storageService;
 
     @Override
     public BusinessProfileResponse createOrUpdateProfile(BusinessProfileRequest request, UUID businessId) {
-        BusinessProfile profile = (businessId != null) ?
-            businessProfileRepository.findById(businessId).orElse(new BusinessProfile()) : new BusinessProfile();
+        BusinessProfile profile = (businessId != null)
+                ? businessProfileRepository.findById(businessId).orElse(new BusinessProfile())
+                : new BusinessProfile();
         profile.setLogoUrl(request.logoUrl);
         profile.setBusinessName(request.businessName);
         profile.setBusinessType(request.businessType);
@@ -63,11 +71,12 @@ public class BusinessServiceImpl implements BusinessService {
         profile.setTimezone(request.timezone);
         profile.setSlug(generateSlug(request.businessName));
         profile.setCompetitionLevel(1);
-        if (profile.getCreatedAt() == null) profile.setCreatedAt(ZonedDateTime.now());
-        
+        if (profile.getCreatedAt() == null)
+            profile.setCreatedAt(ZonedDateTime.now());
+
         // Save the business profile
         businessProfileRepository.save(profile);
-        
+
         // Create user_business mapping for new profiles
         if (businessId == null) {
             Long currentUserId = SecurityUtils.getCurrentUserId();
@@ -79,11 +88,12 @@ public class BusinessServiceImpl implements BusinessService {
                 }
             }
         }
-        
+
         BusinessProfileResponse resp = new BusinessProfileResponse();
         resp.businessId = profile.getBusinessId();
         resp.success = true;
-        resp.message = (businessId == null) ? "Business profile created successfully" : "Business profile updated successfully";
+        resp.message = (businessId == null) ? "Business profile created successfully"
+                : "Business profile updated successfully";
         resp.data = new BusinessProfileResponse.Data();
         resp.data.businessId = profile.getBusinessId();
         resp.data.businessName = profile.getBusinessName();
@@ -91,20 +101,20 @@ public class BusinessServiceImpl implements BusinessService {
         resp.data.createdAt = profile.getCreatedAt();
         return resp;
     }
-    
+
     public BusinessProfileResponse getBusinessProfile() {
-    	Long userId = SecurityUtils.getCurrentUserId();
-    	BusinessProfileResponse resp = new BusinessProfileResponse();
-    	BusinessProfile profile = businessProfileRepository.findByUserId(userId);
+        Long userId = SecurityUtils.getCurrentUserId();
+        BusinessProfileResponse resp = new BusinessProfileResponse();
+        BusinessProfile profile = businessProfileRepository.findByUserId(userId);
         if (profile == null) {
-        	return resp;
-        }else {
-			
-			resp.success = true;
-			resp.message = "Business profile fetched successfully";
-			resp.data = new BusinessProfileResponse.Data();
-			resp.data.businessId = profile.getBusinessId();
-			resp.data.businessName = profile.getBusinessName();
+            return resp;
+        } else {
+
+            resp.success = true;
+            resp.message = "Business profile fetched successfully";
+            resp.data = new BusinessProfileResponse.Data();
+            resp.data.businessId = profile.getBusinessId();
+            resp.data.businessName = profile.getBusinessName();
             resp.data.logoUrl = profile.getLogoUrl();
             resp.data.businessType = profile.getBusinessType();
             resp.data.description = profile.getDescription();
@@ -119,10 +129,10 @@ public class BusinessServiceImpl implements BusinessService {
             resp.data.competitionLevel = profile.getCompetitionLevel();
             resp.data.completed = profile.isCompleted();
             resp.data.slug = profile.getSlug();
-			resp.data.createdAt = profile.getCreatedAt();
-			return resp;
+            resp.data.createdAt = profile.getCreatedAt();
+            return resp;
         }
-    	
+
     }
 
     @Override
@@ -134,19 +144,23 @@ public class BusinessServiceImpl implements BusinessService {
             resp.message = "Business not found";
             return resp;
         }
+        String businessTimezone = profile.getTimezone();
+        ZoneId businessZone = businessTimezone != null ? ZoneId.of(businessTimezone) : ZoneId.systemDefault();
+
         BusinessHours hours = businessHoursRepository.findByBusinessProfile(profile);
-        if (hours == null) hours = new BusinessHours();
+        if (hours == null)
+            hours = new BusinessHours();
         hours.setBusinessProfile(profile);
 
         // Mapping
         var bh = request.businessHours;
-        hours.setMonday(toDaily(bh.monday));
-        hours.setTuesday(toDaily(bh.tuesday));
-        hours.setWednesday(toDaily(bh.wednesday));
-        hours.setThursday(toDaily(bh.thursday));
-        hours.setFriday(toDaily(bh.friday));
-        hours.setSaturday(toDaily(bh.saturday));
-        hours.setSunday(toDaily(bh.sunday));
+        hours.setMonday(toDailyWithTimezone(bh.monday, businessZone));
+        hours.setTuesday(toDailyWithTimezone(bh.tuesday, businessZone));
+        hours.setWednesday(toDailyWithTimezone(bh.wednesday, businessZone));
+        hours.setThursday(toDailyWithTimezone(bh.thursday, businessZone));
+        hours.setFriday(toDailyWithTimezone(bh.friday, businessZone));
+        hours.setSaturday(toDailyWithTimezone(bh.saturday, businessZone));
+        hours.setSunday(toDailyWithTimezone(bh.sunday, businessZone));
 
         businessHoursRepository.save(hours);
 
@@ -159,12 +173,12 @@ public class BusinessServiceImpl implements BusinessService {
         return resp;
     }
 
-        @Override
-        public LogoUploadResponse uploadImage(Long userId, MultipartFile file) {
-            // Store the image, use userId as folder or key
-            String url = storageService.store("user-image", String.valueOf(userId), file);
-            return new LogoUploadResponse(true, "Image uploaded", url);
-        }
+    @Override
+    public LogoUploadResponse uploadImage(Long userId, MultipartFile file) {
+        // Store the image, use userId as folder or key
+        String url = storageService.store("user-image", String.valueOf(userId), file);
+        return new LogoUploadResponse(true, "Image uploaded", url);
+    }
 
     @Override
     public LogoUploadResponse uploadLogo(Long userId, String businessId, MultipartFile file) {
@@ -182,13 +196,14 @@ public class BusinessServiceImpl implements BusinessService {
         // Delete the image for the user
         return storageService.delete("user-image", String.valueOf(userId));
     }
+
     private DailyHours toDaily(BusinessHoursRequest.Day d) {
-        if (d == null) return null;
+        if (d == null)
+            return null;
         return new DailyHours(
-            d.isOpen,
-            parseTime(d.openTime),
-            parseTime(d.closeTime)
-        );
+                d.isOpen,
+                d.openTime,
+                d.closeTime);
     }
 
     private LocalTime parseTime(String v) {
@@ -198,17 +213,17 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public List<ServiceEntity> saveServices(String businessId, List<ServiceDto> serviceDtos) {
         // Clear existing services for this business (replace all)
-        //UUID businessUUID = UUID.fromString(businessId);
+        // UUID businessUUID = UUID.fromString(businessId);
         serviceRepository.deleteByBusinessId(businessId);
 
         // Convert DTOs to entities and save
         List<ServiceEntity> services = serviceDtos.stream()
-            .map(dto -> convertToEntity(dto, businessId))
-            .collect(Collectors.toList());
-            
+                .map(dto -> convertToEntity(dto, businessId))
+                .collect(Collectors.toList());
+
         return serviceRepository.saveAll(services);
     }
-    
+
     private ServiceEntity convertToEntity(ServiceDto dto, String businessId) {
         ServiceEntity service = new ServiceEntity();
         service.setName(dto.getName().trim());
@@ -224,136 +239,135 @@ public class BusinessServiceImpl implements BusinessService {
     private String generateSlug(String name) {
         return name == null ? null : name.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "");
     }
-    
+
     // Staff Management Implementation
-    
+
     @Override
     public StaffDto createStaffMember(String businessId, SingleStaffRequest request) {
         // Check if email already exists for this business
         if (staffMemberRepository.existsByEmailAndBusinessId(request.getEmail(), businessId)) {
             throw new IllegalArgumentException("Email already exists for another staff member");
         }
-        
+
         StaffMember staffMember = new StaffMember(
-            request.getFirstName().trim(),
-            request.getLastName().trim(),
-            request.getEmail().trim().toLowerCase(),
-            request.getPhone().trim(),
-            request.getRole().trim(),
-            businessId
-        );
-        
+                request.getFirstName().trim(),
+                request.getLastName().trim(),
+                request.getEmail().trim().toLowerCase(),
+                request.getPhone().trim(),
+                request.getRole().trim(),
+                businessId);
+
         if (request.getServices() != null && !request.getServices().isEmpty()) {
             staffMember.setServices(request.getServices());
         }
-        
+
         if (request.getDepartmentId() != null) {
             staffMember.setDepartmentId(request.getDepartmentId());
         }
-        
+
         StaffMember saved = staffMemberRepository.save(staffMember);
-        
+
         // Update business profile completion status after successfully saving staff
         updateBusinessProfileCompletion(businessId);
-        
+
         return convertToStaffDto(saved);
     }
-    
+
     @Override
     public List<StaffDto> getAllStaff(String businessId) {
         List<StaffMember> staffMembers = staffMemberRepository.findByBusinessIdOrderByCreatedAtDesc(businessId);
         return staffMembers.stream()
-            .map(this::convertToStaffDto)
-            .collect(Collectors.toList());
+                .map(this::convertToStaffDto)
+                .collect(Collectors.toList());
     }
-    
+
     @Override
     public StaffDto getStaffById(String businessId, Long staffId) {
         StaffMember staffMember = staffMemberRepository.findByIdAndBusinessId(staffId, businessId)
-            .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
         return convertToStaffDto(staffMember);
     }
-    
+
     @Override
     public StaffDto updateStaffMember(String businessId, Long staffId, SingleStaffRequest request) {
         StaffMember staffMember = staffMemberRepository.findByIdAndBusinessId(staffId, businessId)
-            .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
-        
+                .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
+
         // Check if email already exists for another staff member
         if (staffMemberRepository.existsByEmailAndBusinessIdAndIdNot(request.getEmail(), businessId, staffId)) {
             throw new IllegalArgumentException("Email already exists for another staff member");
         }
-        
+
         staffMember.setFirstName(request.getFirstName().trim());
         staffMember.setLastName(request.getLastName().trim());
         staffMember.setEmail(request.getEmail().trim().toLowerCase());
         staffMember.setPhone(request.getPhone().trim());
         staffMember.setRole(request.getRole().trim());
-        
+
         if (request.getServices() != null) {
             staffMember.setServices(request.getServices());
         }
-        
+
         if (request.getDepartmentId() != null) {
             staffMember.setDepartmentId(request.getDepartmentId());
         }
-        
+
         StaffMember updated = staffMemberRepository.save(staffMember);
         return convertToStaffDto(updated);
     }
-    
+
     @Override
     public boolean deleteStaffMember(String businessId, Long staffId) {
         StaffMember staffMember = staffMemberRepository.findByIdAndBusinessId(staffId, businessId)
-            .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
-        
+                .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
+
         staffMemberRepository.delete(staffMember);
         return true;
     }
-    
+
     @Override
     public List<StaffDto> getStaffByService(String businessId, String serviceId) {
         List<StaffMember> staffMembers = staffMemberRepository.findStaffByBusinessIdAndServiceId(businessId, serviceId);
         return staffMembers.stream()
-            .map(this::convertToStaffDto)
-            .collect(Collectors.toList());
+                .map(this::convertToStaffDto)
+                .collect(Collectors.toList());
     }
-    
+
     private StaffDto convertToStaffDto(StaffMember staffMember) {
         StaffDto dto = new StaffDto(
-            staffMember.getId(),
-            staffMember.getFirstName(),
-            staffMember.getLastName(),
-            staffMember.getEmail(),
-            staffMember.getPhone(),
-            staffMember.getRole(),
-            staffMember.getStatus(),
-            staffMember.getHireDate(),
-            staffMember.getAvatar(),
-            staffMember.getServices(),
-            staffMember.getCreatedAt(),
-            staffMember.getUpdatedAt()
-        );
+                staffMember.getId(),
+                staffMember.getFirstName(),
+                staffMember.getLastName(),
+                staffMember.getEmail(),
+                staffMember.getPhone(),
+                staffMember.getRole(),
+                staffMember.getStatus(),
+                staffMember.getHireDate(),
+                staffMember.getAvatar(),
+                staffMember.getServices(),
+                staffMember.getCreatedAt(),
+                staffMember.getUpdatedAt());
         dto.setDepartmentId(staffMember.getDepartmentId());
         return dto;
     }
-    
+
     @Override
     public void updateBusinessProfileCompletion(String businessId) {
         try {
             // Find the business profile by businessId
-            java.util.Optional<BusinessProfile> profileOpt = businessProfileRepository.findById(java.util.UUID.fromString(businessId));
-            
+            java.util.Optional<BusinessProfile> profileOpt = businessProfileRepository
+                    .findById(java.util.UUID.fromString(businessId));
+
             if (profileOpt.isPresent()) {
                 BusinessProfile profile = profileOpt.get();
-                //UUID businessUUID = profile.getBusinessId();
+                // UUID businessUUID = profile.getBusinessId();
                 // Check if business setup is complete
                 boolean hasServices = !serviceRepository.findByBusinessId(businessId).isEmpty();
                 boolean hasStaff = !staffMemberRepository.findByBusinessIdOrderByCreatedAtDesc(businessId).isEmpty();
-                boolean hasBasicInfo = profile.getBusinessName() != null && 
-                                     profile.getBusinessType() != null && 
-                                     profile.getDescription() != null;
-                
+                boolean hasBasicInfo = profile.getBusinessName() != null &&
+                        profile.getBusinessType() != null &&
+                        profile.getDescription() != null;
+
                 // Set completed flag to true if all requirements are met
                 if (hasBasicInfo && hasServices && hasStaff) {
                     profile.setCompleted(true);
@@ -364,5 +378,27 @@ public class BusinessServiceImpl implements BusinessService {
             // Log error but don't fail the staff creation
             System.err.println("Failed to update business profile completion status: " + e.getMessage());
         }
+    }
+
+    private DailyHours toDailyWithTimezone(BusinessHoursRequest.Day d, ZoneId businessZone) {
+        if (d == null)
+            return null;
+
+        // Truncate seconds and handle timezone
+        String openTime = null;
+        String closeTime = null;
+
+        if (d.openTime != null) {
+            openTime = d.openTime;
+        }
+
+        if (d.closeTime != null) {
+            closeTime = d.closeTime;
+        }
+
+        return new DailyHours(
+                d.isOpen,
+                openTime,
+                closeTime);
     }
 }

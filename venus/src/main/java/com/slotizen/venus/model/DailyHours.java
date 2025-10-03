@@ -7,20 +7,20 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class DailyHours {
     private Boolean isOpen;
-    private LocalTime openTime;
-    private LocalTime closeTime;
+    private String openTime;
+    private String closeTime;
 
     public DailyHours() {}
-    public DailyHours(Boolean isOpen, LocalTime openTime, LocalTime closeTime) {
+    public DailyHours(Boolean isOpen, String openTime, String closeTime) {
         this.isOpen = isOpen;
         this.openTime = openTime;
         this.closeTime = closeTime;
     }
     public Boolean getIsOpen() { return isOpen; }
     public void setIsOpen(Boolean open) { this.isOpen = open; }
-    public LocalTime getOpenTime() { return openTime; }
-    public void setOpenTime(LocalTime openTime) { this.openTime = openTime; }
-    public LocalTime getCloseTime() { return closeTime; }
-    public void setCloseTime(LocalTime closeTime) { this.closeTime = closeTime; }
+    public String getOpenTime() { return openTime; }
+    public void setOpenTime(String openTime) { this.openTime = openTime; }
+    public String getCloseTime() { return closeTime; }
+    public void setCloseTime(String closeTime) { this.closeTime = closeTime; }
 }
 

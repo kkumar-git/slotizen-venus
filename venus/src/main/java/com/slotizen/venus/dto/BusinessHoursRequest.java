@@ -1,5 +1,7 @@
 package com.slotizen.venus.dto;
 
+import java.time.LocalTime;
+
 public class BusinessHoursRequest {
     public Hours businessHours;
 
@@ -15,7 +17,7 @@ public class BusinessHoursRequest {
 
     public static class Day {
         public Boolean isOpen;
-        public String openTime;   // format HH:mm
+        public String openTime;   // format HH:mm:ss
         public String closeTime;  // format HH:mm
     }
   
