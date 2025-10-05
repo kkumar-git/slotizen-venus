@@ -3,7 +3,6 @@ package com.slotizen.venus.service.impl;
 import com.slotizen.venus.dto.*;
 import com.slotizen.venus.model.OtpToken;
 import com.slotizen.venus.model.User;
-import com.slotizen.venus.model.UserBusiness;
 import com.slotizen.venus.dto.UserBusinessDto;
 import com.slotizen.venus.repository.UserRepository;
 import com.slotizen.venus.repository.UserBusinessRepository;
@@ -175,11 +174,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserBusinessDto> getUserBusinesses() {
         Long currentUserId = SecurityUtils.getCurrentUserId();
-        List<UserBusiness> userBusinesses = userBusinessRepository.findByUserId(currentUserId);
         
-        // Convert to DTOs to avoid Hibernate proxy serialization issues
-        return userBusinesses.stream()
-            .map(ub -> new UserBusinessDto(ub.getUserId(), ub.getBusinessId()))
-            .collect(java.util.stream.Collectors.toList());
+        // Use the new repository method that includes business name in single query
+        return userBusinessRepository.findUserBusinessesWithNameByUserId(currentUserId);
     }
 }

@@ -1,6 +1,7 @@
 package com.slotizen.venus.repository;
 
 import com.slotizen.venus.model.UserBusiness;
+import com.slotizen.venus.dto.UserBusinessDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,4 +44,13 @@ public interface UserBusinessRepository extends JpaRepository<UserBusiness, User
      */
     @Query("SELECT COUNT(ub) FROM UserBusiness ub WHERE ub.businessId = :businessId")
     long countUsersByBusinessId(@Param("businessId") UUID businessId);
+    
+    /**
+     * Find user-business relationships with business name in single query
+     */
+    @Query("SELECT new com.slotizen.venus.dto.UserBusinessDto(ub.userId, ub.businessId, bp.businessName, bp.logoUrl, bp.businessType) " +
+           "FROM UserBusiness ub " +
+           "JOIN BusinessProfile bp ON bp.businessId = ub.businessId " +
+           "WHERE ub.userId = :userId")
+    List<UserBusinessDto> findUserBusinessesWithNameByUserId(@Param("userId") Long userId);
 }
