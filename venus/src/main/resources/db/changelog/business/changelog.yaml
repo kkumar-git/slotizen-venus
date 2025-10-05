@@ -28,10 +28,3 @@ databaseChangeLog:
       file: create-departments-table.sql
       relativeToChangelogFile: true
 
-  - include:
-      file: add-department-references.sql
-      relativeToChangelogFile: true
-
-  - include:
-      file: update-business-hours-time-precision.sql
-      relativeToChangelogFile: true	  

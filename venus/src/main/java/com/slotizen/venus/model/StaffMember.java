@@ -45,8 +45,8 @@ public class StaffMember {
     @Column(nullable = false)
     private StaffStatus status = StaffStatus.ACTIVE;
     
-    @Column(nullable = false)
-    private String businessId;
+    @Column(name = "business_id", nullable = false)
+    private Long businessId;
     
     @Column(name = "department_id")
     private Long departmentId;
@@ -71,7 +71,7 @@ public class StaffMember {
     // Constructors
     public StaffMember() {}
     
-    public StaffMember(String firstName, String lastName, String email, String phone, String role, String businessId) {
+    public StaffMember(String firstName, String lastName, String email, String phone, String role, Long businessId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -137,11 +137,11 @@ public class StaffMember {
         this.status = status;
     }
     
-    public String getBusinessId() {
+    public Long getBusinessId() {
         return businessId;
     }
     
-    public void setBusinessId(String businessId) {
+    public void setBusinessId(Long businessId) {
         this.businessId = businessId;
     }
     

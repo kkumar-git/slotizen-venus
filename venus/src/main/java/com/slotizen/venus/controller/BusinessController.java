@@ -3,7 +3,6 @@ package com.slotizen.venus.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,20 +78,20 @@ public class BusinessController {
     }
 
     @PutMapping("/profile/{businessId}")
-    public ResponseEntity<BusinessProfileResponse> updateProfile(@PathVariable UUID businessId,
+    public ResponseEntity<BusinessProfileResponse> updateProfile(@PathVariable Long businessId,
             @RequestBody BusinessProfileRequest request) {
         return ResponseEntity.ok(businessService.createOrUpdateProfile(request, businessId));
     }
 
     @PostMapping("/{businessId}/hours")
-    public ResponseEntity<BusinessHoursResponse> setupHours(@PathVariable("businessId") UUID businessId,
+    public ResponseEntity<BusinessHoursResponse> setupHours(@PathVariable("businessId") Long businessId,
             @RequestBody BusinessHoursRequest request) {
         return ResponseEntity.ok(businessService.setupBusinessHours(businessId, request));
     }
 
     @PostMapping(value = "/{businessId}/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public LogoUploadResponse uploadLogo(
-            @PathVariable String businessId,
+            @PathVariable Long businessId,
             @RequestPart("file") MultipartFile file,
             Authentication authentication) {
         // Extract userId from auth principal or token (adjust to your security context)
@@ -102,7 +101,7 @@ public class BusinessController {
 
     @PostMapping("/{businessId}/services")
     public ResponseEntity<?> saveServices(
-            @PathVariable("businessId") String businessId,
+            @PathVariable("businessId") Long businessId,
             @Valid @RequestBody ServicesRequest request,
             Authentication authentication) {
         
@@ -131,7 +130,7 @@ public class BusinessController {
         }
     }
 
-    private void validateBusinessAccess(Long userId, String businessId) {
+    private void validateBusinessAccess(Long userId, Long businessId) {
         // TODO: Implement business ownership validation
         // For now, just check if user is authenticated
         if (userId == null) {
@@ -147,7 +146,7 @@ public class BusinessController {
     
     @PostMapping("/{businessId}/staff")
     public ResponseEntity<StaffResponse> createStaff(
-            @PathVariable("businessId") String businessId,
+            @PathVariable("businessId") Long businessId,
             @Valid @RequestBody StaffRequest request,
             Authentication authentication) {
         try {
@@ -178,7 +177,7 @@ public class BusinessController {
     
     @PostMapping("/{businessId}/staff/single")
     public ResponseEntity<StaffResponse> createStaffMember(
-            @PathVariable("businessId") String businessId,
+            @PathVariable("businessId") Long businessId,
             @Valid @RequestBody SingleStaffRequest request,
             Authentication authentication) {
         try {
@@ -203,7 +202,7 @@ public class BusinessController {
     
     @GetMapping("/{businessId}/staff")
     public ResponseEntity<StaffResponse> getAllStaff(
-            @PathVariable("businessId") String businessId,
+            @PathVariable("businessId") Long businessId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -223,7 +222,7 @@ public class BusinessController {
     
     @GetMapping("/{businessId}/staff/{staffId}")
     public ResponseEntity<StaffResponse> getStaffById(
-            @PathVariable("businessId") String businessId,
+            @PathVariable("businessId") Long businessId,
             @PathVariable("staffId") Long staffId,
             Authentication authentication) {
         try {
@@ -247,7 +246,7 @@ public class BusinessController {
     
     @PutMapping("/{businessId}/staff/{staffId}")
     public ResponseEntity<StaffResponse> updateStaffMember(
-            @PathVariable("businessId") String businessId,
+            @PathVariable("businessId") Long businessId,
             @PathVariable("staffId") Long staffId,
             @Valid @RequestBody SingleStaffRequest request,
             Authentication authentication) {
@@ -272,7 +271,7 @@ public class BusinessController {
     
     @DeleteMapping("/{businessId}/staff/{staffId}")
     public ResponseEntity<StaffResponse> deleteStaffMember(
-            @PathVariable("businessId") String businessId,
+            @PathVariable("businessId") Long businessId,
             @PathVariable("staffId") Long staffId,
             Authentication authentication) {
         try {
@@ -296,8 +295,8 @@ public class BusinessController {
     
     @GetMapping("/{businessId}/staff/by-service")
     public ResponseEntity<StaffResponse> getStaffByService(
-            @PathVariable("businessId") String businessId,
-            @RequestParam("serviceId") String serviceId,
+            @PathVariable("businessId") Long businessId,
+            @RequestParam("serviceId") Long serviceId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -319,7 +318,7 @@ public class BusinessController {
     
     @PostMapping("/{businessId}/departments")
     public ResponseEntity<?> createDepartments(
-            @PathVariable(name = "businessId") String businessId,
+            @PathVariable(name = "businessId") Long businessId,
             @Valid @RequestBody DepartmentsRequest request,
             Authentication authentication) {
         try {
@@ -344,7 +343,7 @@ public class BusinessController {
     
     @GetMapping("/{businessId}/departments")
     public ResponseEntity<?> getDepartments(
-            @PathVariable(name = "businessId") String businessId,
+            @PathVariable(name = "businessId") Long businessId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -365,7 +364,7 @@ public class BusinessController {
     @GetMapping("/departments/{departmentId}")
     public ResponseEntity<?> getDepartmentById(
             @PathVariable(name = "departmentId") Long departmentId,
-            @RequestParam String businessId,
+            @RequestParam Long businessId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -386,7 +385,7 @@ public class BusinessController {
     @PutMapping("/departments/{departmentId}")
     public ResponseEntity<?> updateDepartment(
             @PathVariable(name = "departmentId") Long departmentId,
-            @RequestParam String businessId,
+            @RequestParam Long businessId,
             @Valid @RequestBody DepartmentDto request,
             Authentication authentication) {
         try {
@@ -408,7 +407,7 @@ public class BusinessController {
     @DeleteMapping("/departments/{departmentId}")
     public ResponseEntity<?> deleteDepartment(
             @PathVariable(name = "departmentId") Long departmentId,
-            @RequestParam(name = "businessId") String businessId,
+            @RequestParam(name = "businessId") Long businessId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -429,7 +428,7 @@ public class BusinessController {
     @PostMapping("/departments/{departmentId}/status")
     public ResponseEntity<?> toggleDepartmentStatus(
             @PathVariable Long departmentId,
-            @RequestParam String businessId,
+            @RequestParam Long businessId,
             @RequestParam Boolean isActive,
             Authentication authentication) {
         try {

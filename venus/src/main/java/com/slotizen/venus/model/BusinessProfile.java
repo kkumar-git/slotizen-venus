@@ -2,14 +2,13 @@ package com.slotizen.venus.model;
 
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "business_profile")
 public class BusinessProfile {
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID businessId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long businessId;
 
 	@Column(nullable = false)
 	private String businessName;
@@ -39,11 +38,11 @@ public class BusinessProfile {
 	@Column(nullable = false)
 	private ZonedDateTime createdAt = ZonedDateTime.now();
 
-	public UUID getBusinessId() {
+	public Long getBusinessId() {
 		return businessId;
 	}
 
-	public void setBusinessId(UUID businessId) {
+	public void setBusinessId(Long businessId) {
 		this.businessId = businessId;
 	}
 

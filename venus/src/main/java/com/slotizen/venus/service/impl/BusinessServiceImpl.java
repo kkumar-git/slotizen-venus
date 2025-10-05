@@ -3,9 +3,7 @@ package com.slotizen.venus.service.impl;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +52,7 @@ public class BusinessServiceImpl implements BusinessService {
     private StorageService storageService;
 
     @Override
-    public BusinessProfileResponse createOrUpdateProfile(BusinessProfileRequest request, UUID businessId) {
+    public BusinessProfileResponse createOrUpdateProfile(BusinessProfileRequest request, Long businessId) {
         BusinessProfile profile = (businessId != null)
                 ? businessProfileRepository.findById(businessId).orElse(new BusinessProfile())
                 : new BusinessProfile();
@@ -136,7 +134,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public BusinessHoursResponse setupBusinessHours(UUID businessId, BusinessHoursRequest request) {
+    public BusinessHoursResponse setupBusinessHours(Long businessId, BusinessHoursRequest request) {
         BusinessProfile profile = businessProfileRepository.findById(businessId).orElse(null);
         if (profile == null) {
             BusinessHoursResponse resp = new BusinessHoursResponse();
@@ -181,11 +179,11 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public LogoUploadResponse uploadLogo(Long userId, String businessId, MultipartFile file) {
-        BusinessProfile profile = businessProfileRepository.findById(UUID.fromString(businessId))
+    public LogoUploadResponse uploadLogo(Long userId, Long businessId, MultipartFile file) {
+        BusinessProfile profile = businessProfileRepository.findById(businessId)
                 .orElseThrow(() -> new IllegalArgumentException("Business not found"));
         // (Optional) verify userId owns this business
-        String url = storageService.store("business-logo", businessId, file);
+        String url = storageService.store("business-logo", businessId.toString(), file);
         profile.setLogoUrl(url);
         businessProfileRepository.save(profile);
         return new LogoUploadResponse(true, "Logo uploaded", url);
@@ -211,7 +209,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public List<ServiceEntity> saveServices(String businessId, List<ServiceDto> serviceDtos) {
+    public List<ServiceEntity> saveServices(Long businessId, List<ServiceDto> serviceDtos) {
         // Clear existing services for this business (replace all)
         // UUID businessUUID = UUID.fromString(businessId);
         serviceRepository.deleteByBusinessId(businessId);
@@ -224,7 +222,7 @@ public class BusinessServiceImpl implements BusinessService {
         return serviceRepository.saveAll(services);
     }
 
-    private ServiceEntity convertToEntity(ServiceDto dto, String businessId) {
+    private ServiceEntity convertToEntity(ServiceDto dto, Long businessId) {
         ServiceEntity service = new ServiceEntity();
         service.setName(dto.getName().trim());
         service.setDescription(dto.getDescription().trim());
@@ -243,7 +241,7 @@ public class BusinessServiceImpl implements BusinessService {
     // Staff Management Implementation
 
     @Override
-    public StaffDto createStaffMember(String businessId, SingleStaffRequest request) {
+    public StaffDto createStaffMember(Long businessId, SingleStaffRequest request) {
         // Check if email already exists for this business
         if (staffMemberRepository.existsByEmailAndBusinessId(request.getEmail(), businessId)) {
             throw new IllegalArgumentException("Email already exists for another staff member");
@@ -274,7 +272,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public List<StaffDto> getAllStaff(String businessId) {
+    public List<StaffDto> getAllStaff(Long businessId) {
         List<StaffMember> staffMembers = staffMemberRepository.findByBusinessIdOrderByCreatedAtDesc(businessId);
         return staffMembers.stream()
                 .map(this::convertToStaffDto)
@@ -282,14 +280,14 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public StaffDto getStaffById(String businessId, Long staffId) {
+    public StaffDto getStaffById(Long businessId, Long staffId) {
         StaffMember staffMember = staffMemberRepository.findByIdAndBusinessId(staffId, businessId)
                 .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
         return convertToStaffDto(staffMember);
     }
 
     @Override
-    public StaffDto updateStaffMember(String businessId, Long staffId, SingleStaffRequest request) {
+    public StaffDto updateStaffMember(Long businessId, Long staffId, SingleStaffRequest request) {
         StaffMember staffMember = staffMemberRepository.findByIdAndBusinessId(staffId, businessId)
                 .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
 
@@ -317,7 +315,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public boolean deleteStaffMember(String businessId, Long staffId) {
+    public boolean deleteStaffMember(Long businessId, Long staffId) {
         StaffMember staffMember = staffMemberRepository.findByIdAndBusinessId(staffId, businessId)
                 .orElseThrow(() -> new IllegalArgumentException("Staff member not found"));
 
@@ -326,7 +324,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public List<StaffDto> getStaffByService(String businessId, String serviceId) {
+    public List<StaffDto> getStaffByService(Long businessId, Long serviceId) {
         List<StaffMember> staffMembers = staffMemberRepository.findStaffByBusinessIdAndServiceId(businessId, serviceId);
         return staffMembers.stream()
                 .map(this::convertToStaffDto)
@@ -352,11 +350,11 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public void updateBusinessProfileCompletion(String businessId) {
+    public void updateBusinessProfileCompletion(Long businessId) {
         try {
             // Find the business profile by businessId
             java.util.Optional<BusinessProfile> profileOpt = businessProfileRepository
-                    .findById(java.util.UUID.fromString(businessId));
+                    .findById(businessId);
 
             if (profileOpt.isPresent()) {
                 BusinessProfile profile = profileOpt.get();

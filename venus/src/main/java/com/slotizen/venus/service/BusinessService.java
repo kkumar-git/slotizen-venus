@@ -1,7 +1,6 @@
 package com.slotizen.venus.service;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,21 +17,21 @@ import com.slotizen.venus.model.StaffMember;
 
 public interface BusinessService {
 	BusinessProfileResponse getBusinessProfile();
-    BusinessProfileResponse createOrUpdateProfile(BusinessProfileRequest request, UUID businessId);
-    BusinessHoursResponse setupBusinessHours(UUID businessId, BusinessHoursRequest request);
-    LogoUploadResponse uploadLogo(Long userId, String businessId, MultipartFile file);
+    BusinessProfileResponse createOrUpdateProfile(BusinessProfileRequest request, Long businessId);
+    BusinessHoursResponse setupBusinessHours(Long businessId, BusinessHoursRequest request);
+    LogoUploadResponse uploadLogo(Long userId, Long businessId, MultipartFile file);
     LogoUploadResponse uploadImage(Long userId, MultipartFile file);
     boolean deleteImage(Long userId);
-    List<ServiceEntity> saveServices(String businessId, List<ServiceDto> serviceDtos);
-    
+    List<ServiceEntity> saveServices(Long businessId, List<ServiceDto> serviceDtos);
+
     // Staff Management Methods
-    StaffDto createStaffMember(String businessId, SingleStaffRequest request);
-    List<StaffDto> getAllStaff(String businessId);
-    StaffDto getStaffById(String businessId, Long staffId);
-    StaffDto updateStaffMember(String businessId, Long staffId, SingleStaffRequest request);
-    boolean deleteStaffMember(String businessId, Long staffId);
-    List<StaffDto> getStaffByService(String businessId, String serviceId);
-    
+    StaffDto createStaffMember(Long businessId, SingleStaffRequest request);
+    List<StaffDto> getAllStaff(Long businessId);
+    StaffDto getStaffById(Long businessId, Long staffId);
+    StaffDto updateStaffMember(Long businessId, Long staffId, SingleStaffRequest request);
+    boolean deleteStaffMember(Long businessId, Long staffId);
+    List<StaffDto> getStaffByService(Long businessId, Long serviceId);
+
     // Helper method to update business profile completion status
-    void updateBusinessProfileCompletion(String businessId);
+    void updateBusinessProfileCompletion(Long businessId);
 }

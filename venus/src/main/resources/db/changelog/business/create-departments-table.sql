@@ -5,7 +5,7 @@
 -- Create departments table
 CREATE TABLE departments (
     id BIGSERIAL PRIMARY KEY,
-    business_id VARCHAR(255) NOT NULL,
+    business_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     color VARCHAR(7) NOT NULL,

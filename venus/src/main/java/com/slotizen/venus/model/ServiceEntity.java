@@ -1,7 +1,6 @@
 package com.slotizen.venus.model;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -17,8 +16,8 @@ import jakarta.persistence.Table;
 @Table(name = "business_service")
 public class ServiceEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
     @Column(nullable = false, length = 100)
     private String name;
@@ -35,8 +34,8 @@ public class ServiceEntity {
     @Column(nullable = false, length = 50)
     private String category;
     
-    @Column(nullable = false)
-    private String businessId;
+    @Column(name= "business_id", nullable = false)
+    private Long businessId;
 
     @Column(name = "department_id")
     private Long departmentId;
@@ -50,7 +49,7 @@ public class ServiceEntity {
     // Constructors
     public ServiceEntity() {}
     
-    public ServiceEntity(String name, String description, String duration, String price, String category, String businessId) {
+    public ServiceEntity(String name, String description, String duration, String price, String category, Long businessId) {
         this.name = name;
         this.description = description;
         this.duration = duration;
@@ -60,11 +59,11 @@ public class ServiceEntity {
     }
     
     // Getters and setters
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
-    
-    public void setId(UUID id) {
+
+    public void setId(Long id) {
         this.id = id;
     }
     
@@ -108,11 +107,11 @@ public class ServiceEntity {
         this.category = category;
     }
     
-    public String getBusinessId() {
+    public Long getBusinessId() {
         return businessId;
     }
     
-    public void setBusinessId(String businessId) {
+    public void setBusinessId(Long businessId) {
         this.businessId = businessId;
     }
     

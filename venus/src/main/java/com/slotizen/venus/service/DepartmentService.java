@@ -22,7 +22,7 @@ public class DepartmentService {
     @Autowired
     private DepartmentRepository departmentRepository;
     
-    public List<DepartmentResponse> createDepartments(String businessId, List<DepartmentDto> departmentDtos) {
+    public List<DepartmentResponse> createDepartments(Long businessId, List<DepartmentDto> departmentDtos) {
         List<DepartmentResponse> createdDepartments = new ArrayList<>();
         
         for (DepartmentDto dto : departmentDtos) {
@@ -45,7 +45,7 @@ public class DepartmentService {
         return createdDepartments;
     }
     
-    public List<DepartmentResponse> getDepartmentsByBusinessId(String businessId) {
+    public List<DepartmentResponse> getDepartmentsByBusinessId(Long businessId) {
         List<Object[]> results = departmentRepository.findDepartmentsWithCounts(businessId);
         List<DepartmentResponse> responses = new ArrayList<>();
         
@@ -61,8 +61,8 @@ public class DepartmentService {
         
         return responses;
     }
-    
-    public DepartmentResponse getDepartmentById(Long departmentId, String businessId) {
+
+    public DepartmentResponse getDepartmentById(Long departmentId, Long businessId) {
         Department department = departmentRepository.findByIdAndBusinessId(departmentId, businessId)
             .orElseThrow(() -> new DepartmentNotFoundException("Department not found with id: " + departmentId));
         
@@ -71,8 +71,8 @@ public class DepartmentService {
         
         return convertToDepartmentResponse(department, (int) staffCount, (int) servicesCount);
     }
-    
-    public DepartmentResponse updateDepartment(Long departmentId, String businessId, DepartmentDto departmentDto) {
+
+    public DepartmentResponse updateDepartment(Long departmentId, Long businessId, DepartmentDto departmentDto) {
         Department department = departmentRepository.findByIdAndBusinessId(departmentId, businessId)
             .orElseThrow(() -> new DepartmentNotFoundException("Department not found with id: " + departmentId));
         
@@ -92,8 +92,8 @@ public class DepartmentService {
         
         return convertToDepartmentResponse(updated, (int) staffCount, (int) servicesCount);
     }
-    
-    public void deleteDepartment(Long departmentId, String businessId) {
+
+    public void deleteDepartment(Long departmentId, Long businessId) {
         Department department = departmentRepository.findByIdAndBusinessId(departmentId, businessId)
             .orElseThrow(() -> new DepartmentNotFoundException("Department not found with id: " + departmentId));
         
@@ -113,8 +113,8 @@ public class DepartmentService {
         
         departmentRepository.delete(department);
     }
-    
-    public DepartmentResponse toggleDepartmentStatus(Long departmentId, String businessId, Boolean isActive) {
+
+    public DepartmentResponse toggleDepartmentStatus(Long departmentId, Long businessId, Boolean isActive) {
         Department department = departmentRepository.findByIdAndBusinessId(departmentId, businessId)
             .orElseThrow(() -> new DepartmentNotFoundException("Department not found with id: " + departmentId));
         

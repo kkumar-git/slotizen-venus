@@ -1,0 +1,9 @@
+databaseChangeLog:
+
+  - include:
+      file: create-clients-table.sql
+      relativeToChangelogFile: true
+      
+  - include:
+      file: create-bookings-table.sql
+      relativeToChangelogFile: true

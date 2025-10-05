@@ -1,10 +1,9 @@
 package com.slotizen.venus.dto;
 
-import java.util.UUID;
 
 public class UserBusinessDto {
     private Long userId;
-    private UUID businessId;
+    private Long businessId;
     private String businessName;
     private String businessLogo;
     private String businessType;
@@ -12,18 +11,18 @@ public class UserBusinessDto {
     // Constructors
     public UserBusinessDto() {}
     
-    public UserBusinessDto(Long userId, UUID businessId) {
+    public UserBusinessDto(Long userId, Long businessId) {
         this.userId = userId;
         this.businessId = businessId;
     }
 
-    public UserBusinessDto(Long userId, UUID businessId, String businessName) {
+    public UserBusinessDto(Long userId, Long businessId, String businessName) {
         this.userId = userId;
         this.businessId = businessId;
         this.businessName = businessName;
     }
 
-    public UserBusinessDto(Long userId, UUID businessId, String businessName, String businessLogo, String businessType) {
+    public UserBusinessDto(Long userId, Long businessId, String businessName, String businessLogo, String businessType) {
         this.userId = userId;
         this.businessId = businessId;
         this.businessName = businessName;
@@ -34,9 +33,9 @@ public class UserBusinessDto {
     // Getters and setters
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
-    
-    public UUID getBusinessId() { return businessId; }
-    public void setBusinessId(UUID businessId) { this.businessId = businessId; }
+
+    public Long getBusinessId() { return businessId; }
+    public void setBusinessId(Long businessId) { this.businessId = businessId; }
     public String getBusinessName() { return businessName; }
     public void setBusinessName(String businessName) { this.businessName = businessName; }
 

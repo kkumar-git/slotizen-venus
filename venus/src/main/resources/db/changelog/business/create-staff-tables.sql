@@ -11,7 +11,8 @@ CREATE TABLE business_staff_members (
     phone VARCHAR(20) NOT NULL,
     role VARCHAR(50) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-    business_id VARCHAR(255) NOT NULL,
+    business_id BIGINT NOT NULL,
+    department_id BIGINT,
     hire_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     avatar VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -21,10 +22,12 @@ CREATE TABLE business_staff_members (
 -- Create business_staff_services table for many-to-many relationship
 CREATE TABLE business_staff_services (
     staff_id BIGINT NOT NULL,
-    service_id VARCHAR(255) NOT NULL,
+    service_id BIGINT NOT NULL,
     PRIMARY KEY (staff_id, service_id),
     FOREIGN KEY (staff_id) REFERENCES business_staff_members(id) ON DELETE CASCADE
 );
+
+
 
 -- Add indexes for performance
 CREATE INDEX idx_staff_business_id ON business_staff_members(business_id);
@@ -33,6 +36,7 @@ CREATE INDEX idx_staff_status ON business_staff_members(status);
 CREATE INDEX idx_staff_created_at ON business_staff_members(created_at);
 CREATE INDEX idx_staff_services_staff_id ON business_staff_services(staff_id);
 CREATE INDEX idx_staff_services_service_id ON business_staff_services(service_id);
+CREATE INDEX idx_staff_department_id ON business_staff_members(department_id);
 
 -- Add unique constraint on email per business
 ALTER TABLE business_staff_members 
@@ -41,6 +45,10 @@ ADD CONSTRAINT uk_staff_email_business UNIQUE (email, business_id);
 -- Add check constraint for status
 ALTER TABLE business_staff_members 
 ADD CONSTRAINT chk_staff_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'ON_LEAVE'));
+
+ALTER TABLE business_staff_members 
+ADD CONSTRAINT fk_staff_department 
+FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL;
 
 -- Add comments for documentation
 COMMENT ON TABLE business_staff_members IS 'Staff members associated with businesses';

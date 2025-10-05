@@ -3,7 +3,7 @@
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS business_profile (
-    business_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    business_id BIGSERIAL PRIMARY KEY,
     business_name VARCHAR(255) NOT NULL,
     logo_url VARCHAR(500),
     business_type VARCHAR(255) NOT NULL,

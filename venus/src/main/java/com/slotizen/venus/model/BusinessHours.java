@@ -3,14 +3,13 @@ package com.slotizen.venus.model;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Entity
 @Table(name = "business_hours")
 public class BusinessHours {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_id", nullable = false)
@@ -66,8 +65,8 @@ public class BusinessHours {
     })
     private DailyHours sunday;
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public BusinessProfile getBusinessProfile() { return businessProfile; }
     public void setBusinessProfile(BusinessProfile businessProfile) { this.businessProfile = businessProfile; }
     public DailyHours getMonday() { return monday; }

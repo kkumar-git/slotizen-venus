@@ -13,15 +13,15 @@ import com.slotizen.venus.model.Department;
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
     
-    List<Department> findByBusinessIdOrderByCreatedAtDesc(String businessId);
+    List<Department> findByBusinessIdOrderByCreatedAtDesc(Long businessId);
     
-    List<Department> findByBusinessIdAndIsActiveOrderByCreatedAtDesc(String businessId, Boolean isActive);
+    List<Department> findByBusinessIdAndIsActiveOrderByCreatedAtDesc(Long businessId, Boolean isActive);
     
-    Optional<Department> findByIdAndBusinessId(Long id, String businessId);
+    Optional<Department> findByIdAndBusinessId(Long id, Long businessId);
     
-    boolean existsByBusinessIdAndName(String businessId, String name);
+    boolean existsByBusinessIdAndName(Long businessId, String name);
     
-    boolean existsByBusinessIdAndNameAndIdNot(String businessId, String name, Long id);
+    boolean existsByBusinessIdAndNameAndIdNot(Long businessId, String name, Long id);
     
     @Query("SELECT COUNT(s) FROM StaffMember s WHERE s.departmentId = :departmentId")
     long countStaffByDepartmentId(@Param("departmentId") Long departmentId);
@@ -33,7 +33,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
            "(SELECT COUNT(sm) FROM StaffMember sm WHERE sm.departmentId = d.id) as staffCount, " +
            "(SELECT COUNT(se) FROM ServiceEntity se WHERE se.departmentId = d.id) as servicesCount " +
            "FROM Department d WHERE d.businessId = :businessId ORDER BY d.createdAt DESC")
-    List<Object[]> findDepartmentsWithCounts(@Param("businessId") String businessId);
+    List<Object[]> findDepartmentsWithCounts(@Param("businessId") Long businessId);
     
-    long countByBusinessIdAndIsActive(String businessId, Boolean isActive);
+    long countByBusinessIdAndIsActive(Long businessId, Boolean isActive);
 }

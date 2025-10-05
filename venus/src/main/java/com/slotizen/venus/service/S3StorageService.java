@@ -1,7 +1,6 @@
 package com.slotizen.venus.service;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,9 +55,10 @@ public class S3StorageService implements StorageService {
         if (original != null && original.contains(".")) {
             ext = original.substring(original.lastIndexOf("."));
         }
+        String dateTime = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String filename = contextType + "_" + refId + "_" + dateTime + ext;
         String key = props.getS3().getPrefix().replaceAll("/$", "")
-                + "/" + contextType + "/" + refId + "/"
-                + Instant.now().toEpochMilli() + "_" + UUID.randomUUID() + ext;
+                + "/" + contextType + "/" + filename;
 
         try {
             PutObjectRequest put = PutObjectRequest.builder()

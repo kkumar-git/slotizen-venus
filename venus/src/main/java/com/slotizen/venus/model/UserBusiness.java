@@ -3,7 +3,6 @@ package com.slotizen.venus.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Table(name = "user_business")
@@ -16,7 +15,7 @@ public class UserBusiness {
 
     @Id
     @Column(name = "business_id")
-    private UUID businessId;
+    private Long businessId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -29,7 +28,7 @@ public class UserBusiness {
     // Constructors
     public UserBusiness() {}
 
-    public UserBusiness(Long userId, UUID businessId) {
+    public UserBusiness(Long userId, Long businessId) {
         this.userId = userId;
         this.businessId = businessId;
     }
@@ -43,11 +42,11 @@ public class UserBusiness {
         this.userId = userId;
     }
 
-    public UUID getBusinessId() {
+    public Long getBusinessId() {
         return businessId;
     }
 
-    public void setBusinessId(UUID businessId) {
+    public void setBusinessId(Long businessId) {
         this.businessId = businessId;
     }
 
@@ -92,11 +91,11 @@ public class UserBusiness {
     // Composite Primary Key Class
     public static class UserBusinessId implements Serializable {
         private Long userId;
-        private UUID businessId;
+        private Long businessId;
 
         public UserBusinessId() {}
 
-        public UserBusinessId(Long userId, UUID businessId) {
+        public UserBusinessId(Long userId, Long businessId) {
             this.userId = userId;
             this.businessId = businessId;
         }
@@ -109,11 +108,11 @@ public class UserBusiness {
             this.userId = userId;
         }
 
-        public UUID getBusinessId() {
+        public Long getBusinessId() {
             return businessId;
         }
 
-        public void setBusinessId(UUID businessId) {
+        public void setBusinessId(Long businessId) {
             this.businessId = businessId;
         }
 

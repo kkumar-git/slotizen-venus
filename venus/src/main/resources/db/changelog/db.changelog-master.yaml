@@ -8,3 +8,10 @@ databaseChangeLog:
       file: business/changelog.yaml
       relativeToChangelogFile: true    
 
+  - include:
+      file: booking/changelog.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: jewel/changelog.yaml
+      relativeToChangelogFile: true    

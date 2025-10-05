@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class DepartmentResponse {
     
     private Long id;
-    private String businessId;
+    private Long businessId;
     private String name;
     private String description;
     private String color;
@@ -18,7 +18,7 @@ public class DepartmentResponse {
     // Constructors
     public DepartmentResponse() {}
     
-    public DepartmentResponse(Long id, String businessId, String name, String description, String color, 
+    public DepartmentResponse(Long id, Long businessId, String name, String description, String color, 
                             Boolean isActive, Integer staffCount, Integer servicesCount, 
                             LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -42,11 +42,11 @@ public class DepartmentResponse {
         this.id = id;
     }
     
-    public String getBusinessId() {
+    public Long getBusinessId() {
         return businessId;
     }
     
-    public void setBusinessId(String businessId) {
+    public void setBusinessId(Long businessId) {
         this.businessId = businessId;
     }
     

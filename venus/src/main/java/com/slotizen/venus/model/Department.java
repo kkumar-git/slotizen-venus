@@ -24,7 +24,7 @@ public class Department {
     private Long id;
     
     @Column(name = "business_id", nullable = false)
-    private String businessId;
+    private Long businessId;
     
     @Column(nullable = false, length = 255)
     private String name;
@@ -49,7 +49,7 @@ public class Department {
     // Constructors
     public Department() {}
     
-    public Department(String businessId, String name, String description, String color) {
+    public Department(Long businessId, String name, String description, String color) {
         this.businessId = businessId;
         this.name = name;
         this.description = description;
@@ -65,11 +65,11 @@ public class Department {
         this.id = id;
     }
     
-    public String getBusinessId() {
+    public Long getBusinessId() {
         return businessId;
     }
     
-    public void setBusinessId(String businessId) {
+    public void setBusinessId(Long businessId) {
         this.businessId = businessId;
     }
     

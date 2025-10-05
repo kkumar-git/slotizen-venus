@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 public interface UserBusinessRepository extends JpaRepository<UserBusiness, UserBusiness.UserBusinessId> {
@@ -21,17 +20,17 @@ public interface UserBusinessRepository extends JpaRepository<UserBusiness, User
     /**
      * Find all user-business relationships for a specific business
      */
-    List<UserBusiness> findByBusinessId(UUID businessId);
+    List<UserBusiness> findByBusinessId(Long businessId);
     
     /**
      * Check if a user is associated with a business
      */
-    boolean existsByUserIdAndBusinessId(Long userId, UUID businessId);
+    boolean existsByUserIdAndBusinessId(Long userId, Long businessId);
     
     /**
      * Delete user-business relationship
      */
-    void deleteByUserIdAndBusinessId(Long userId, UUID businessId);
+    void deleteByUserIdAndBusinessId(Long userId, Long businessId);
     
     /**
      * Count total businesses for a user
@@ -43,7 +42,7 @@ public interface UserBusinessRepository extends JpaRepository<UserBusiness, User
      * Count total users for a business
      */
     @Query("SELECT COUNT(ub) FROM UserBusiness ub WHERE ub.businessId = :businessId")
-    long countUsersByBusinessId(@Param("businessId") UUID businessId);
+    long countUsersByBusinessId(@Param("businessId") Long businessId);
     
     /**
      * Find user-business relationships with business name in single query

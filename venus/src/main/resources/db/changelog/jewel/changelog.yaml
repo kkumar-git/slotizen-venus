@@ -1,0 +1,14 @@
+databaseChangeLog:
+
+  - include:
+      file: insert_user_jewel.sql
+      relativeToChangelogFile: true
+  - include:
+      file: insert_role_jewel.sql
+      relativeToChangelogFile: true    
+  - include:
+      file: insert_business_profile_jewel.sql
+      relativeToChangelogFile: true 
+  - include:
+      file: insert_business_hours_jewel.sql
+      relativeToChangelogFile: true
