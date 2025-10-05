@@ -3,9 +3,13 @@ package com.slotizen.venus.service.impl;
 import com.slotizen.venus.dto.*;
 import com.slotizen.venus.model.OtpToken;
 import com.slotizen.venus.model.User;
+import com.slotizen.venus.model.UserBusiness;
+import com.slotizen.venus.dto.UserBusinessDto;
 import com.slotizen.venus.repository.UserRepository;
+import com.slotizen.venus.repository.UserBusinessRepository;
 import com.slotizen.venus.service.OtpService;
 import com.slotizen.venus.service.UserService;
+import com.slotizen.venus.util.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserBusinessRepository userBusinessRepository;
 
     @Autowired
     private OtpService otpService;
@@ -163,5 +170,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsByEmail(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+    
+    @Override
+    public List<UserBusinessDto> getUserBusinesses() {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        List<UserBusiness> userBusinesses = userBusinessRepository.findByUserId(currentUserId);
+        
+        // Convert to DTOs to avoid Hibernate proxy serialization issues
+        return userBusinesses.stream()
+            .map(ub -> new UserBusinessDto(ub.getUserId(), ub.getBusinessId()))
+            .collect(java.util.stream.Collectors.toList());
     }
 }

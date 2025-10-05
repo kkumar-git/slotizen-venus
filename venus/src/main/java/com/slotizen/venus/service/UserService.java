@@ -2,6 +2,8 @@ package com.slotizen.venus.service;
 
 import com.slotizen.venus.dto.*;
 import com.slotizen.venus.model.User;
+import com.slotizen.venus.model.UserBusiness;
+import com.slotizen.venus.dto.UserBusinessDto;
 import java.util.List;
 
 public interface UserService {
@@ -15,4 +17,9 @@ public interface UserService {
     List<UserProfileResponse> getAllUsers();
     User findByEmail(String email);
     boolean existsByEmail(String email);
+    
+    /**
+     * Get all UserBusiness relationships for the current user as DTOs
+     */
+    List<UserBusinessDto> getUserBusinesses();
 }
