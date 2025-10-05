@@ -38,7 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/auth/refresh",
             "/auth/verify-otp",
             "/auth/resend-otp",
-            "/auth/demo-requests"
+            "/auth/demo-requests",
+            "/static/",           // Add static resources
+            "/uploads/"           // Add uploads as backup
     );
 
     private final JwtService jwtService;

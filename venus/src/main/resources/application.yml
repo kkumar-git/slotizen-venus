@@ -94,3 +94,4 @@ app:
       - image/jpg
       - image/webp
       - image/gif
+storage.local.base-dir: ./uploads
