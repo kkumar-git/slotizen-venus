@@ -3,6 +3,8 @@ package com.slotizen.venus.model;
 import com.slotizen.venus.util.LongListConverter;
 import com.slotizen.venus.util.StringListConverter;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,12 +50,14 @@ public class Client {
     @Column(name = "next_appointment")
     private LocalDateTime nextAppointment;
     
-    @Column(columnDefinition = "JSON")
+    @Column(name = "tags", columnDefinition = "json")
     @Convert(converter = StringListConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<String> tags = new ArrayList<>();
     
-    @Column(name = "favorite_services", columnDefinition = "JSON")
+    @Column(name = "favorite_services", columnDefinition = "json")
     @Convert(converter = LongListConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<Long> favoriteServices = new ArrayList<>();
     
     @Column(name = "avatar")

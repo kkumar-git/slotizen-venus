@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 @Converter
 public class StringListConverter implements AttributeConverter<List<String>, String> {
     
+    private static final Logger logger = LoggerFactory.getLogger(StringListConverter.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     @Override
@@ -20,20 +23,26 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
             return "[]";
         }
         try {
-            return objectMapper.writeValueAsString(attribute);
+            String json = objectMapper.writeValueAsString(attribute);
+            logger.debug("Converting to database: {} -> {}", attribute, json);
+            return json;
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Error converting list to JSON", e);
+            logger.error("Error converting list to JSON: {}", attribute, e);
+            return "[]";
         }
     }
     
     @Override
     public List<String> convertToEntityAttribute(String dbData) {
-        if (dbData == null || dbData.isEmpty() || "null".equals(dbData)) {
+        if (dbData == null || dbData.trim().isEmpty()) {
             return new ArrayList<>();
         }
         try {
-            return objectMapper.readValue(dbData, new TypeReference<List<String>>() {});
+            List<String> list = objectMapper.readValue(dbData, new TypeReference<List<String>>() {});
+            logger.debug("Converting from database: {} -> {}", dbData, list);
+            return list != null ? list : new ArrayList<>();
         } catch (JsonProcessingException e) {
+            logger.error("Error converting JSON to list: {}", dbData, e);
             return new ArrayList<>();
         }
     }
