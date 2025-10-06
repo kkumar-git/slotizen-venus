@@ -60,7 +60,7 @@ public class StaffMember {
     @ElementCollection
     @CollectionTable(name = "business_staff_services", joinColumns = @JoinColumn(name = "staff_id"))
     @Column(name = "service_id")
-    private Set<String> services = new HashSet<>();
+    private Set<Long> services = new HashSet<>();
     
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -169,11 +169,11 @@ public class StaffMember {
         this.avatar = avatar;
     }
     
-    public Set<String> getServices() {
+    public Set<Long> getServices() {
         return services;
     }
     
-    public void setServices(Set<String> services) {
+    public void setServices(Set<Long> services) {
         this.services = services;
     }
     

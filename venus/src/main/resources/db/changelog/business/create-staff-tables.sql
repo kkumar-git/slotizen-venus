@@ -27,8 +27,6 @@ CREATE TABLE business_staff_services (
     FOREIGN KEY (staff_id) REFERENCES business_staff_members(id) ON DELETE CASCADE
 );
 
-
-
 -- Add indexes for performance
 CREATE INDEX idx_staff_business_id ON business_staff_members(business_id);
 CREATE INDEX idx_staff_email_business ON business_staff_members(email, business_id);
@@ -37,10 +35,6 @@ CREATE INDEX idx_staff_created_at ON business_staff_members(created_at);
 CREATE INDEX idx_staff_services_staff_id ON business_staff_services(staff_id);
 CREATE INDEX idx_staff_services_service_id ON business_staff_services(service_id);
 CREATE INDEX idx_staff_department_id ON business_staff_members(department_id);
-
--- Add unique constraint on email per business
-ALTER TABLE business_staff_members 
-ADD CONSTRAINT uk_staff_email_business UNIQUE (email, business_id);
 
 -- Add check constraint for status
 ALTER TABLE business_staff_members 

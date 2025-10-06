@@ -2,7 +2,7 @@
 --changeset kkumar:business_service
 
 CREATE TABLE IF NOT EXISTS business_service (
-    id BIGSERIAL PRIMARY KEY,,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(1000) NOT NULL,
     duration VARCHAR(10) NOT NULL,

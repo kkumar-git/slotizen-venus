@@ -57,14 +57,14 @@ public class StaffRequest {
         @Size(max = 50, message = "Role cannot exceed 50 characters")
         private String role;
         
-        private Set<String> services;
+        private Set<Long> services;
         private String id; // For updates (optional)
         private Long departmentId;
         
         // Constructors
         public StaffMemberRequest() {}
         
-        public StaffMemberRequest(String firstName, String lastName, String email, String phone, String role, Set<String> services) {
+        public StaffMemberRequest(String firstName, String lastName, String email, String phone, String role, Set<Long> services) {
             this.firstName = firstName;
             this.lastName = lastName;
             this.email = email;
@@ -89,8 +89,8 @@ public class StaffRequest {
         public String getRole() { return role; }
         public void setRole(String role) { this.role = role; }
         
-        public Set<String> getServices() { return services; }
-        public void setServices(Set<String> services) { this.services = services; }
+        public Set<Long> getServices() { return services; }
+        public void setServices(Set<Long> services) { this.services = services; }
         
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }

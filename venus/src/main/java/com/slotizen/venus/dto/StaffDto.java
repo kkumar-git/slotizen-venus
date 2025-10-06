@@ -16,7 +16,7 @@ public class StaffDto {
     private StaffStatus status;
     private LocalDateTime hireDate;
     private String avatar;
-    private Set<String> services;
+    private Set<Long> services;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long departmentId;
@@ -25,7 +25,7 @@ public class StaffDto {
     public StaffDto() {}
     
     public StaffDto(Long id, String firstName, String lastName, String email, String phone, String role, 
-                   StaffStatus status, LocalDateTime hireDate, String avatar, Set<String> services, 
+                   StaffStatus status, LocalDateTime hireDate, String avatar, Set<Long> services, 
                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.firstName = firstName;
@@ -114,11 +114,12 @@ public class StaffDto {
         this.avatar = avatar;
     }
     
-    public Set<String> getServices() {
+
+    public Set<Long> getServices() {
         return services;
     }
     
-    public void setServices(Set<String> services) {
+    public void setServices(Set<Long> services) {
         this.services = services;
     }
     

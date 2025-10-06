@@ -7,6 +7,7 @@
 --Developmental Paediatrics, Special Education,  Counseling, 
 --OCCUPATIONAL THERAPY, PHYSIOTHERAPY, SPEECH LANGUAGE PATHOLOGY, SPECIAL EDUCATION, BEHAVIOUR THERAPY, ADMINISTRATION, JANITORIAL, ONLINE
 
+--OCCUPATIONAL THERAPY
 insert
 	into
 	public.departments
@@ -30,11 +31,12 @@ insert
 	price,
 	category,
 	business_id,
+	department_id,
 	created_at,
-	updated_at,
-	department_id)
-values(nextval('business_service_id_seq'::regclass), 'Occupational Therapy', 'Occupational Therapy', '45', '0', 'consultation', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, currval('departments_id_seq'::regclass),);
+	updated_at)
+values(nextval('business_service_id_seq'::regclass), 'Occupational Therapy', 'Occupational Therapy', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+--PHYSIOTHERAPY
 insert
 	into
 	public.departments
@@ -50,6 +52,22 @@ values(nextval('departments_id_seq'::regclass), '1', 'PHYSIOTHERAPY', 'Physiothe
 
 insert
 	into
+	public.business_service
+(id,
+	"name",
+	description,
+	duration,
+	price,
+	category,
+	business_id,
+	department_id,
+	created_at,
+	updated_at)
+values(nextval('business_service_id_seq'::regclass), 'Physiotherapy', 'Physiotherapy', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+--SPEECH LANGUAGE PATHOLOGY
+insert
+	into
 	public.departments
 (id,
 	business_id,
@@ -63,6 +81,22 @@ values(nextval('departments_id_seq'::regclass), '1', 'SPEECH LANGUAGE PATHOLOGY'
 
 insert
 	into
+	public.business_service
+(id,
+	"name",
+	description,
+	duration,
+	price,
+	category,
+	business_id,
+	department_id,
+	created_at,
+	updated_at)
+values(nextval('business_service_id_seq'::regclass), 'Speech Language Pathology', 'Speech Language Pathology', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+--SPECIAL EDUCATION
+insert
+	into
 	public.departments
 (id,
 	business_id,
@@ -74,7 +108,22 @@ insert
 	updated_at)
 values(nextval('departments_id_seq'::regclass), '1', 'SPECIAL EDUCATION', 'Special education is a branch of education that addresses the needs of students with disabilities.', '#EF4444', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+insert
+	into
+	public.business_service
+(id,
+	"name",
+	description,
+	duration,
+	price,
+	category,
+	business_id,
+	department_id,
+	created_at,
+	updated_at)
+values(nextval('business_service_id_seq'::regclass), 'Special Education', 'Special Education', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+--BEHAVIOUR THERAPY
 insert
 	into
 	public.departments
@@ -90,6 +139,22 @@ values(nextval('departments_id_seq'::regclass), '1', 'BEHAVIOUR THERAPY', 'Behav
 
 insert
 	into
+	public.business_service
+(id,
+	"name",
+	description,
+	duration,
+	price,
+	category,
+	business_id,
+	department_id,
+	created_at,
+	updated_at)
+values(nextval('business_service_id_seq'::regclass), 'Behaviour Therapy', 'Behaviour Therapy', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+--ADMINISTRATION
+insert
+	into
 	public.departments
 (id,
 	business_id,
@@ -101,6 +166,7 @@ insert
 	updated_at)
 values(nextval('departments_id_seq'::regclass), '1', 'ADMINISTRATION', 'Administration is the management of a business, organization, or institution.', '#EC4899', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+--JANITORIAL
 insert
 	into
 	public.departments
@@ -114,6 +180,7 @@ insert
 	updated_at)
 values(nextval('departments_id_seq'::regclass), '1', 'JANITORIAL', 'Janitorial services are essential for maintaining cleanliness and order in facilities.', '#06B6D4', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+-- ONLINE
 insert
 	into
 	public.departments
