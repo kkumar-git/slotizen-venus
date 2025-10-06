@@ -18,7 +18,7 @@ public class StorageProperties {
 
     public static class Local {
         private String baseDir = "uploads";
-        private String publicBaseUrl = "http://localhost:8081/static";
+        private String publicBaseUrl = "http://localhost:8081/api/static";
 
         public String getBaseDir() { return baseDir; }
         public void setBaseDir(String baseDir) { this.baseDir = baseDir; }

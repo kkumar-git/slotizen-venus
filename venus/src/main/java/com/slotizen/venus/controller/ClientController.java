@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/businesses/{businessId}/clients")
-@PreAuthorize("hasRole('USER')")
+@RequestMapping("/business/{businessId}/clients")
+@PreAuthorize("hasAnyRole('STAFF', 'CLIENT_MANAGER', 'CLIENT', 'ADMIN', 'SUPER_ADMIN', 'BUSINESS_OWNER')")
 public class ClientController {
     
     @Autowired
@@ -28,9 +28,9 @@ public class ClientController {
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<ClientDto>>> getClients(
-            @PathVariable Long businessId,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String status) {
+            @PathVariable(name = "businessId") Long businessId,
+            @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "status", required = false) String status) {
         
         List<ClientDto> clients;
         
@@ -51,8 +51,8 @@ public class ClientController {
      */
     @GetMapping("/{clientId}")
     public ResponseEntity<ApiResponse<ClientDto>> getClient(
-            @PathVariable Long businessId,
-            @PathVariable Long clientId) {
+            @PathVariable(name = "businessId") Long businessId,
+            @PathVariable(name = "clientId") Long clientId) {
         
         ClientDto client = clientService.getClientById(businessId, clientId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Client retrieved successfully", client));
@@ -64,7 +64,7 @@ public class ClientController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<ClientDto>> createClient(
-            @PathVariable Long businessId,
+            @PathVariable(name = "businessId") Long businessId,
             @Valid @RequestBody CreateClientRequest request) {
         
         ClientDto client = clientService.createClient(businessId, request);
@@ -79,8 +79,8 @@ public class ClientController {
      */
     @PutMapping("/{clientId}")
     public ResponseEntity<ApiResponse<ClientDto>> updateClient(
-            @PathVariable Long businessId,
-            @PathVariable Long clientId,
+            @PathVariable(name = "businessId") Long businessId,
+            @PathVariable(name = "clientId") Long clientId,
             @Valid @RequestBody UpdateClientRequest request) {
         
         ClientDto client = clientService.updateClient(businessId, clientId, request);
@@ -93,8 +93,8 @@ public class ClientController {
      */
     @DeleteMapping("/{clientId}")
     public ResponseEntity<ApiResponse<String>> deleteClient(
-            @PathVariable Long businessId,
-            @PathVariable Long clientId) {
+            @PathVariable(name = "businessId") Long businessId,
+            @PathVariable(name = "clientId") Long clientId) {
         
         clientService.deleteClient(businessId, clientId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Client deleted successfully", null));
@@ -106,7 +106,7 @@ public class ClientController {
      */
     @GetMapping("/count")
     public ResponseEntity<ApiResponse<Long>> getClientCount(
-            @PathVariable Long businessId) {
+            @PathVariable(name = "businessId") Long businessId) {
         
         long count = clientService.getClientCount(businessId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Client count retrieved successfully", count));
@@ -118,7 +118,7 @@ public class ClientController {
      */
     @GetMapping("/active-count")
     public ResponseEntity<ApiResponse<Long>> getActiveClientCount(
-            @PathVariable Long businessId) {
+            @PathVariable(name = "businessId") Long businessId) {
         
         long count = clientService.getActiveClientCount(businessId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Active client count retrieved successfully", count));

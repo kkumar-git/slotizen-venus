@@ -22,8 +22,8 @@ insert
     competition_level,
     completed,
     created_at)
-values(nextval('business_profile_business_id_seq'::regclass), 'Jewel Children with Autism & Rehabilitation Center - INDIA',
-    'http://localhost:8081/static/user-image/user-image_16_20251005_145725.jpg',
+values(nextval('business_profile_business_id_seq'::regclass), 'Jewel - Kottayam',
+    'http://localhost:8081/api/static/user-image/user-image_16_20251005_145725.jpg',
     'therapy-and-rehabilitation-centre',
     'Jewel Autism Centre is a multi-speciality therapy clinic founded in 2008 specially designed to bridge the gaps in the developmental history of a child. Our centre offers the best autism treatment in India',
     'Cheriyapally Hospital Buildings, Ooppoottil Kavala',
@@ -60,8 +60,8 @@ values(nextval('business_profile_business_id_seq'::regclass), 'Jewel Children wi
     competition_level,
     completed,
     created_at)
-values(nextval('business_profile_business_id_seq'::regclass), 'Jewel Child Developmental Centre',
-    'http://localhost:8081/static/user-image/user-image_16_20251005_145725.jpg',
+values(nextval('business_profile_business_id_seq'::regclass), 'Jewel - Kakkanad',
+    'http://localhost:8081/api/static/user-image/user-image_16_20251005_145725.jpg',
     'therapy-and-rehabilitation-centre',
     'Jewel Autism Centre is a multi-speciality therapy clinic founded in 2008 specially designed to bridge the gaps in the developmental history of a child. Our centre offers the best autism treatment in India',
     'Chandrasekharan Nair Road, Near Kendriya Bhavan',
@@ -98,8 +98,8 @@ values(nextval('business_profile_business_id_seq'::regclass), 'Jewel Child Devel
     competition_level,
     completed,
     created_at)
-values(nextval('business_profile_business_id_seq'::regclass), 'Jewel Children with Autism & Rehabilitation Center - DUBAI',
-    'http://localhost:8081/static/user-image/user-image_16_20251005_145725.jpg',
+values(nextval('business_profile_business_id_seq'::regclass), 'Jewel - Dubai',
+    'http://localhost:8081/api/static/user-image/user-image_16_20251005_145725.jpg',
     'therapy-and-rehabilitation-centre',
     'Jewel Autism Centre is a multi-speciality therapy clinic founded in 2008 specially designed to bridge the gaps in the developmental history of a child. Our centre offers the best autism treatment in Dubai',
     'Room No. 106 1st Floor',

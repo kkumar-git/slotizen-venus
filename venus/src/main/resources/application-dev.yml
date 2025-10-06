@@ -8,4 +8,4 @@ app:
     provider: local
     local:
       base-dir: uploads
-      public-base-url: http://localhost:8081/static
+      public-base-url: http://localhost:8081/api/static

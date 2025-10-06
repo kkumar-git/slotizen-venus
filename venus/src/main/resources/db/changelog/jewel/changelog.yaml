@@ -17,4 +17,7 @@ databaseChangeLog:
       relativeToChangelogFile: true    
   - include:
       file: insert_staff_service_jewel.sql
-      relativeToChangelogFile: true    
+      relativeToChangelogFile: true
+  - include:
+      file: insert_user_business_jewel.sql
+      relativeToChangelogFile: true        
