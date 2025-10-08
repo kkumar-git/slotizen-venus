@@ -20,6 +20,7 @@ public class StaffDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long departmentId;
+    private String departmentName;
     
     // Constructors
     public StaffDto() {}
@@ -145,5 +146,13 @@ public class StaffDto {
     
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
     }
 }

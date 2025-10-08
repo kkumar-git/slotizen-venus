@@ -22,11 +22,13 @@ import com.slotizen.venus.dto.StaffDto;
 import com.slotizen.venus.model.BusinessHours;
 import com.slotizen.venus.model.BusinessProfile;
 import com.slotizen.venus.model.DailyHours;
+import com.slotizen.venus.model.Department;
 import com.slotizen.venus.model.ServiceEntity;
 import com.slotizen.venus.model.StaffMember;
 import com.slotizen.venus.model.UserBusiness;
 import com.slotizen.venus.repository.BusinessHoursRepository;
 import com.slotizen.venus.repository.BusinessProfileRepository;
+import com.slotizen.venus.repository.DepartmentRepository;
 import com.slotizen.venus.repository.ServiceRepository;
 import com.slotizen.venus.repository.StaffMemberRepository;
 import com.slotizen.venus.repository.UserBusinessRepository;
@@ -34,7 +36,10 @@ import com.slotizen.venus.service.BusinessService;
 import com.slotizen.venus.service.StorageService;
 import com.slotizen.venus.util.SecurityUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 @Transactional
 public class BusinessServiceImpl implements BusinessService {
 
@@ -48,6 +53,8 @@ public class BusinessServiceImpl implements BusinessService {
     private StaffMemberRepository staffMemberRepository;
     @Autowired
     private UserBusinessRepository userBusinessRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
     @Autowired
     private StorageService storageService;
 
@@ -293,7 +300,8 @@ public class BusinessServiceImpl implements BusinessService {
 
         // Check if email already exists for another staff member
         if (staffMemberRepository.existsByEmailAndBusinessIdAndIdNot(request.getEmail(), businessId, staffId)) {
-            throw new IllegalArgumentException("Email already exists for another staff member");
+            log.error("Attempt to update staff member with duplicate email: {}", request.getEmail());
+            //throw new IllegalArgumentException("Email already exists for another staff member");
         }
 
         staffMember.setFirstName(request.getFirstName().trim());
@@ -346,6 +354,13 @@ public class BusinessServiceImpl implements BusinessService {
                 staffMember.getCreatedAt(),
                 staffMember.getUpdatedAt());
         dto.setDepartmentId(staffMember.getDepartmentId());
+        
+        // Set department name if departmentId exists
+        if (staffMember.getDepartmentId() != null) {
+            departmentRepository.findById(staffMember.getDepartmentId())
+                    .ifPresent(department -> dto.setDepartmentName(department.getName()));
+        }
+        
         return dto;
     }
 

@@ -482,6 +482,7 @@ public class BusinessController {
             member.getServices()
         );
         request.setDepartmentId(member.getDepartmentId());
+        request.setDepartmentName(member.getDepartmentName());
         return request;
     }
 }

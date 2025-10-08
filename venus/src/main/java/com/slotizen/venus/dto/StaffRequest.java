@@ -60,6 +60,7 @@ public class StaffRequest {
         private Set<Long> services;
         private String id; // For updates (optional)
         private Long departmentId;
+        private String departmentName;
         
         // Constructors
         public StaffMemberRequest() {}
@@ -97,5 +98,8 @@ public class StaffRequest {
         
         public Long getDepartmentId() { return departmentId; }
         public void setDepartmentId(Long departmentId) { this.departmentId = departmentId; }
+
+        public String getDepartmentName() { return departmentName; }
+        public void setDepartmentName(String departmentName) { this.departmentName = departmentName; }
     }
 }
