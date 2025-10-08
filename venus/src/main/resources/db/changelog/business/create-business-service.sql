@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS business_service (
     duration VARCHAR(10) NOT NULL,
     price VARCHAR(20) NOT NULL,
     category VARCHAR(50) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
     business_id BIGINT NOT NULL,
     department_id BIGINT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

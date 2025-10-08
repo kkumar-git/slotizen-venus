@@ -360,7 +360,7 @@ public class BusinessServiceImpl implements BusinessService {
                 BusinessProfile profile = profileOpt.get();
                 // UUID businessUUID = profile.getBusinessId();
                 // Check if business setup is complete
-                boolean hasServices = !serviceRepository.findByBusinessId(businessId).isEmpty();
+                boolean hasServices = !serviceRepository.findByBusinessIdOrderByCreatedAtDesc(businessId).isEmpty();
                 boolean hasStaff = !staffMemberRepository.findByBusinessIdOrderByCreatedAtDesc(businessId).isEmpty();
                 boolean hasBasicInfo = profile.getBusinessName() != null &&
                         profile.getBusinessType() != null &&

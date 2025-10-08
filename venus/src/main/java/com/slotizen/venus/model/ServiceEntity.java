@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,6 +36,10 @@ public class ServiceEntity {
     @Column(nullable = false, length = 50)
     private String category;
     
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ServiceStatus status = ServiceStatus.ACTIVE;
+    
     @Column(name= "business_id", nullable = false)
     private Long businessId;
 
@@ -56,6 +62,7 @@ public class ServiceEntity {
         this.price = price;
         this.category = category;
         this.businessId = businessId;
+        this.status = ServiceStatus.ACTIVE;
     }
     
     // Getters and setters
@@ -105,6 +112,14 @@ public class ServiceEntity {
     
     public void setCategory(String category) {
         this.category = category;
+    }
+    
+    public ServiceStatus getStatus() {
+        return status;
+    }
+    
+    public void setStatus(ServiceStatus status) {
+        this.status = status;
     }
     
     public Long getBusinessId() {

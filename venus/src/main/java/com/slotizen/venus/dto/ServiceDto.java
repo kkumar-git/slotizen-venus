@@ -1,47 +1,55 @@
 package com.slotizen.venus.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
+
+import com.slotizen.venus.model.ServiceStatus;
 
 public class ServiceDto {
-    @NotBlank(message = "Service name is required")
-    @Size(min = 2, max = 100, message = "Service name must be between 2 and 100 characters")
+    private Long id;
     private String name;
-    
-    @NotBlank(message = "Description is required") 
-    @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     private String description;
-    
-    @NotBlank(message = "Duration is required")
-    @Pattern(regexp = "^(15|30|45|60|90|120|180|240)$", message = "Invalid duration")
     private String duration;
-    
-    @NotBlank(message = "Price is required")
-    @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "Invalid price format")
     private String price;
-    
-    @NotBlank(message = "Category is required")
-    @Pattern(regexp = "^(hair-services|skin-care|nail-care|massage-therapy|medical-treatment|fitness-training|consultation|other)$", 
-             message = "Invalid category")
     private String category;
-    
-    private String id; // Optional for updates
-    
+    private ServiceStatus status;
+    private Long businessId;
     private Long departmentId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    // Service statistics
+    private Long bookingsCount = 0L;
+    private String totalRevenue = "0.00";
+    private Double averageRating = 0.0;
     
     // Constructors
     public ServiceDto() {}
     
-    public ServiceDto(String name, String description, String duration, String price, String category) {
+    public ServiceDto(Long id, String name, String description, String duration, String price, 
+                     String category, ServiceStatus status, Long businessId, Long departmentId,
+                     LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.duration = duration;
         this.price = price;
         this.category = category;
+        this.status = status;
+        this.businessId = businessId;
+        this.departmentId = departmentId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
     
     // Getters and setters
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public String getName() {
         return name;
     }
@@ -82,12 +90,20 @@ public class ServiceDto {
         this.category = category;
     }
     
-    public String getId() {
-        return id;
+    public ServiceStatus getStatus() {
+        return status;
     }
     
-    public void setId(String id) {
-        this.id = id;
+    public void setStatus(ServiceStatus status) {
+        this.status = status;
+    }
+    
+    public Long getBusinessId() {
+        return businessId;
+    }
+    
+    public void setBusinessId(Long businessId) {
+        this.businessId = businessId;
     }
     
     public Long getDepartmentId() {
@@ -96,5 +112,45 @@ public class ServiceDto {
     
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+    
+    public Long getBookingsCount() {
+        return bookingsCount;
+    }
+    
+    public void setBookingsCount(Long bookingsCount) {
+        this.bookingsCount = bookingsCount;
+    }
+    
+    public String getTotalRevenue() {
+        return totalRevenue;
+    }
+    
+    public void setTotalRevenue(String totalRevenue) {
+        this.totalRevenue = totalRevenue;
+    }
+    
+    public Double getAverageRating() {
+        return averageRating;
+    }
+    
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
     }
 }

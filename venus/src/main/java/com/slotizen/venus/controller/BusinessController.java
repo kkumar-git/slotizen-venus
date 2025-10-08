@@ -99,7 +99,7 @@ public class BusinessController {
         return businessService.uploadLogo(userId, businessId, file);
     }
 
-    @PostMapping("/{businessId}/services")
+    @PostMapping("/{businessId}/services/setup")
     public ResponseEntity<?> saveServices(
             @PathVariable("businessId") Long businessId,
             @Valid @RequestBody ServicesRequest request,
@@ -341,6 +341,31 @@ public class BusinessController {
         }
     }
     
+    @PostMapping("/{businessId}/departments/single")
+    public ResponseEntity<?> createSingleDepartment(
+            @PathVariable(name = "businessId") Long businessId,
+            @Valid @RequestBody DepartmentDto request,
+            Authentication authentication) {
+        try {
+            Long userId = extractUserId(authentication);
+            validateBusinessAccess(userId, businessId);
+            
+            DepartmentResponse department = departmentService.createSingleDepartment(businessId, request);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of(
+                    "message", "Department created successfully",
+                    "department", department
+                ));
+                
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Access denied"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", e.getMessage()));
+        }
+    }
+    
     @GetMapping("/{businessId}/departments")
     public ResponseEntity<?> getDepartments(
             @PathVariable(name = "businessId") Long businessId,
@@ -361,10 +386,10 @@ public class BusinessController {
         }
     }
     
-    @GetMapping("/departments/{departmentId}")
+    @GetMapping("{businessId}/departments/{departmentId}")
     public ResponseEntity<?> getDepartmentById(
+            @PathVariable(name = "businessId") Long businessId,
             @PathVariable(name = "departmentId") Long departmentId,
-            @RequestParam Long businessId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -382,10 +407,10 @@ public class BusinessController {
         }
     }
     
-    @PutMapping("/departments/{departmentId}")
+    @PutMapping("{businessId}/departments/{departmentId}")
     public ResponseEntity<?> updateDepartment(
+            @PathVariable(name = "businessId") Long businessId,
             @PathVariable(name = "departmentId") Long departmentId,
-            @RequestParam Long businessId,
             @Valid @RequestBody DepartmentDto request,
             Authentication authentication) {
         try {
@@ -404,10 +429,10 @@ public class BusinessController {
         }
     }
     
-    @DeleteMapping("/departments/{departmentId}")
+    @DeleteMapping("{businessId}/departments/{departmentId}")
     public ResponseEntity<?> deleteDepartment(
+            @PathVariable(name = "businessId") Long businessId,
             @PathVariable(name = "departmentId") Long departmentId,
-            @RequestParam(name = "businessId") Long businessId,
             Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
@@ -425,10 +450,10 @@ public class BusinessController {
         }
     }
     
-    @PostMapping("/departments/{departmentId}/status")
+    @PostMapping("{businessId}/departments/{departmentId}/status")
     public ResponseEntity<?> toggleDepartmentStatus(
             @PathVariable Long departmentId,
-            @RequestParam Long businessId,
+            @PathVariable Long businessId,
             @RequestParam Boolean isActive,
             Authentication authentication) {
         try {

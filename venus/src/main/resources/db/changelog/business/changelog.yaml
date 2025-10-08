@@ -28,5 +28,4 @@ databaseChangeLog:
       file: create-demo-requests-table.sql
       relativeToChangelogFile: true
 
-  
 

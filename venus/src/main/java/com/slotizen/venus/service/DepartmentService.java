@@ -45,6 +45,23 @@ public class DepartmentService {
         return createdDepartments;
     }
     
+    public DepartmentResponse createSingleDepartment(Long businessId, DepartmentDto departmentDto) {
+        // Check for duplicate names
+        if (departmentRepository.existsByBusinessIdAndName(businessId, departmentDto.getName())) {
+            throw new DepartmentValidationException("Department with name '" + departmentDto.getName() + "' already exists");
+        }
+        
+        Department department = new Department(
+            businessId,
+            departmentDto.getName().trim(),
+            departmentDto.getDescription().trim(),
+            departmentDto.getColor()
+        );
+        
+        Department saved = departmentRepository.save(department);
+        return convertToDepartmentResponse(saved, 0, 0);
+    }
+    
     public List<DepartmentResponse> getDepartmentsByBusinessId(Long businessId) {
         List<Object[]> results = departmentRepository.findDepartmentsWithCounts(businessId);
         List<DepartmentResponse> responses = new ArrayList<>();

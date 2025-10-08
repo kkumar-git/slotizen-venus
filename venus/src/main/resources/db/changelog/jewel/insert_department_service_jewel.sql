@@ -30,11 +30,12 @@ insert
 	duration,
 	price,
 	category,
+	status,
 	business_id,
 	department_id,
 	created_at,
 	updated_at)
-values(nextval('business_service_id_seq'::regclass), 'Occupational Therapy', 'Occupational Therapy', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+values(nextval('business_service_id_seq'::regclass), 'Occupational Therapy', 'Occupational Therapy', '45', '0', 'consultation', 'ACTIVE', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --PHYSIOTHERAPY
 insert
@@ -59,11 +60,12 @@ insert
 	duration,
 	price,
 	category,
+	status,
 	business_id,
 	department_id,
 	created_at,
 	updated_at)
-values(nextval('business_service_id_seq'::regclass), 'Physiotherapy', 'Physiotherapy', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+values(nextval('business_service_id_seq'::regclass), 'Physiotherapy', 'Physiotherapy', '45', '0', 'consultation', 'ACTIVE', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --SPEECH LANGUAGE PATHOLOGY
 insert
@@ -88,11 +90,12 @@ insert
 	duration,
 	price,
 	category,
+	status,
 	business_id,
 	department_id,
 	created_at,
 	updated_at)
-values(nextval('business_service_id_seq'::regclass), 'Speech Language Pathology', 'Speech Language Pathology', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+values(nextval('business_service_id_seq'::regclass), 'Speech Language Pathology', 'Speech Language Pathology', '45', '0', 'consultation', 'ACTIVE', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --SPECIAL EDUCATION
 insert
@@ -117,11 +120,12 @@ insert
 	duration,
 	price,
 	category,
+	status,
 	business_id,
 	department_id,
 	created_at,
 	updated_at)
-values(nextval('business_service_id_seq'::regclass), 'Special Education', 'Special Education', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+values(nextval('business_service_id_seq'::regclass), 'Special Education', 'Special Education', '45', '0', 'consultation', 'ACTIVE', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --BEHAVIOUR THERAPY
 insert
@@ -146,11 +150,12 @@ insert
 	duration,
 	price,
 	category,
+	status,
 	business_id,
 	department_id,
 	created_at,
 	updated_at)
-values(nextval('business_service_id_seq'::regclass), 'Behaviour Therapy', 'Behaviour Therapy', '45', '0', 'consultation', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+values(nextval('business_service_id_seq'::regclass), 'Behaviour Therapy', 'Behaviour Therapy', '45', '0', 'consultation', 'ACTIVE', 1, currval('departments_id_seq'::regclass), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --ADMINISTRATION
 insert
