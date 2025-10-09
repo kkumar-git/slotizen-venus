@@ -33,6 +33,8 @@ public class BusinessProfileResponse {
         public boolean active;
         public Integer competitionLevel;
         public boolean completed;
+        public Integer defaultDuration;
+        public String currency;
     }
     
 }

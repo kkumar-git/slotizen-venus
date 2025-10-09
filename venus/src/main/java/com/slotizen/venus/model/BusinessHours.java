@@ -65,6 +65,8 @@ public class BusinessHours {
     })
     private DailyHours sunday;
 
+    
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public BusinessProfile getBusinessProfile() { return businessProfile; }

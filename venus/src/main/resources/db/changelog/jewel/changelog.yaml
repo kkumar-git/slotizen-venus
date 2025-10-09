@@ -20,4 +20,10 @@ databaseChangeLog:
       relativeToChangelogFile: true
   - include:
       file: insert_user_business_jewel.sql
-      relativeToChangelogFile: true        
+      relativeToChangelogFile: true  
+  - include:
+      file: insert_client_jewel.sql
+      relativeToChangelogFile: true 
+  - include:
+      file: insert_booking_jewel.sql
+      relativeToChangelogFile: true              

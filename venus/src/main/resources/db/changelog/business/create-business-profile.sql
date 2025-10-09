@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS business_profile (
     business_name VARCHAR(255) NOT NULL,
     logo_url VARCHAR(500),
     business_type VARCHAR(255) NOT NULL,
+    default_duration INTEGER DEFAULT 45,
+    currency VARCHAR(3) DEFAULT 'INR',
     description VARCHAR(1000),
     address VARCHAR(255) NOT NULL,
     city VARCHAR(255),

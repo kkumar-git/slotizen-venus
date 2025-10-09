@@ -89,6 +89,11 @@ public class BusinessController {
         return ResponseEntity.ok(businessService.setupBusinessHours(businessId, request));
     }
 
+    @GetMapping("/{businessId}/hours")
+    public ResponseEntity<BusinessHoursResponse> getHours(@PathVariable("businessId") Long businessId) {
+        return ResponseEntity.ok(businessService.getBusinessHours(businessId));
+    }
+
     @PostMapping(value = "/{businessId}/logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public LogoUploadResponse uploadLogo(
             @PathVariable Long businessId,

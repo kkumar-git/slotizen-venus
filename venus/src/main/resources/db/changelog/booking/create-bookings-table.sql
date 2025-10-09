@@ -8,7 +8,7 @@ CREATE TABLE bookings (
     service_id BIGINT NOT NULL,
     staff_id BIGINT NOT NULL,
     booking_date DATE NOT NULL,
-    booking_time TIME NOT NULL,
+    booking_time VARCHAR(25) NOT NULL,
     duration_minutes INTEGER NOT NULL,
     status VARCHAR(50) NOT NULL,
     price DECIMAL(10,2) NOT NULL,

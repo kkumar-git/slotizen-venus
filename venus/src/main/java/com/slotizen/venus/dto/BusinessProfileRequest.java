@@ -19,5 +19,7 @@ public class BusinessProfileRequest {
     public String phone;
     public String website;
     public String timezone;
+    public Integer defaultDuration;
+    public String currency;
 	
 }

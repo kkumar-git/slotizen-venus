@@ -13,22 +13,40 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/businesses/{businessId}/bookings")
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasAnyRole('STAFF', 'CLIENT_MANAGER', 'CLIENT', 'ADMIN', 'SUPER_ADMIN', 'BUSINESS_OWNER')")
 public class BookingController {
     
     @Autowired
     private BookingService bookingService;
     
     /**
-     * Get all bookings for a business
+     * Get all bookings for a business, optionally filtered by date
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BookingDto>>> getBookings(@PathVariable Long businessId) {
-        List<BookingDto> bookings = bookingService.getBookingsByBusiness(businessId);
+    public ResponseEntity<ApiResponse<List<BookingDto>>> getBookings(
+            @PathVariable("businessId") Long businessId,
+            @RequestParam(value = "date", required = false) String dateStr) {
+        
+        List<BookingDto> bookings;
+        
+        if (dateStr != null && !dateStr.trim().isEmpty()) {
+            try {
+                LocalDate date = LocalDate.parse(dateStr);
+                bookings = bookingService.getBookingsByDate(businessId, date);
+            } catch (DateTimeParseException e) {
+                return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, "Invalid date format. Please use YYYY-MM-DD format.", null));
+            }
+        } else {
+            bookings = bookingService.getBookingsByBusiness(businessId);
+        }
+        
         return ResponseEntity.ok(new ApiResponse<>(true, "Bookings retrieved successfully", bookings));
     }
     
@@ -37,7 +55,7 @@ public class BookingController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<BookingDto>> createBooking(
-            @PathVariable Long businessId,
+            @PathVariable("businessId") Long businessId,
             @Valid @RequestBody CreateBookingRequest request) {
         
         BookingDto booking = bookingService.createBooking(businessId, request);
@@ -50,8 +68,8 @@ public class BookingController {
      */
     @PutMapping("/{bookingId}/status")
     public ResponseEntity<ApiResponse<BookingDto>> updateBookingStatus(
-            @PathVariable Long businessId,
-            @PathVariable Long bookingId,
+            @PathVariable("businessId") Long businessId,
+            @PathVariable("bookingId") Long bookingId,
             @Valid @RequestBody UpdateBookingStatusRequest request) {
         BookingDto booking = bookingService.updateBookingStatus(businessId, bookingId, request.getStatus());
         return ResponseEntity.ok(new ApiResponse<>(true, "Booking status updated successfully", booking));
@@ -62,8 +80,8 @@ public class BookingController {
      */
     @DeleteMapping("/{bookingId}")
     public ResponseEntity<ApiResponse<String>> deleteBooking(
-            @PathVariable Long businessId,
-            @PathVariable Long bookingId) {
+            @PathVariable("businessId") Long businessId,
+            @PathVariable("bookingId") Long bookingId) {
         bookingService.deleteBooking(businessId, bookingId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Booking deleted successfully", null));
     }
@@ -73,8 +91,8 @@ public class BookingController {
      */
     @GetMapping("/status/{status}")
     public ResponseEntity<ApiResponse<List<BookingDto>>> getBookingsByStatus(
-            @PathVariable Long businessId,
-            @PathVariable String status) {
+            @PathVariable("businessId") Long businessId,
+            @PathVariable("status") String status) {
         List<BookingDto> bookings = bookingService.getBookingsByStatus(businessId, status);
         return ResponseEntity.ok(new ApiResponse<>(true, "Bookings retrieved successfully", bookings));
     }
@@ -84,8 +102,8 @@ public class BookingController {
      */
     @GetMapping("/staff/{staffId}")
     public ResponseEntity<ApiResponse<List<BookingDto>>> getBookingsByStaff(
-            @PathVariable Long businessId,
-            @PathVariable Long staffId) {
+            @PathVariable("businessId") Long businessId,
+            @PathVariable("staffId") Long staffId) {
         List<BookingDto> bookings = bookingService.getBookingsByStaff(businessId, staffId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Staff bookings retrieved successfully", bookings));
     }

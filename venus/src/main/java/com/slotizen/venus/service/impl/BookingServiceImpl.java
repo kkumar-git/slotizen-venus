@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingsByBusiness(Long businessId) {
         List<Booking> bookings = bookingRepository
-            .findByBusinessIdOrderByBookingDateDescBookingTimeDesc(businessId);
+            .findByBusinessIdOrderByBookingDateDescBookingTimeAsc(businessId);
         return bookings.stream()
             .map(this::convertToDto)
             .collect(Collectors.toList());
@@ -61,19 +62,36 @@ public class BookingServiceImpl implements BookingService {
         LocalTime startTime = LocalTime.parse(request.getTime());
         LocalTime endTime = startTime.plusMinutes(request.getDuration());
         
-        List<Booking> conflicts = bookingRepository.findConflictingBookings(
-            businessId, staff.getId(), request.getDate(), startTime, endTime
+        // Get all bookings for the staff member on the given date
+        List<Booking> existingBookings = bookingRepository.findBookingsForStaffOnDate(
+            businessId, staff.getId(), request.getDate()
         );
         
-        if (!conflicts.isEmpty()) {
-            throw new BookingConflictException("Staff member is not available at this time");
+        // Check for conflicts in Java
+        for (Booking existingBooking : existingBookings) {
+            // Skip cancelled bookings
+            if (existingBooking.getStatus() == BookingStatus.CANCELLED) {
+                continue;
+            }
+            
+            LocalTime existingStartTime = LocalTime.parse(existingBooking.getBookingTime());
+            LocalTime existingEndTime = existingStartTime.plusMinutes(existingBooking.getDurationMinutes());
+            
+            // Check for time overlap
+            boolean hasConflict = (startTime.isBefore(existingEndTime) && endTime.isAfter(existingStartTime));
+            
+            if (hasConflict) {
+                throw new BookingConflictException(
+                    String.format("Staff member is already booked from %s to %s",
+                            existingStartTime, existingEndTime));
+            }
         }
         
         Long currentUserId = SecurityUtils.getCurrentUserId();
         // 3. Create booking
         Booking booking = new Booking(
             businessId, client, service, staff,
-            request.getDate(), startTime, request.getDuration(),
+            request.getDate(), request.getTime(), request.getDuration(),
             BookingStatus.PENDING, request.getPrice(), request.getNotes(), currentUserId
         );
         
@@ -121,12 +139,33 @@ public class BookingServiceImpl implements BookingService {
     
     @Override
     public List<BookingDto> getBookingsByStaff(Long businessId, Long staffId) {
-        List<Booking> bookings = bookingRepository.findByBusinessIdAndStaffId(businessId, staffId);
+        List<Booking> bookings = bookingRepository.findByBusinessIdAndStaff_Id(businessId, staffId);
         return bookings.stream()
             .map(this::convertToDto)
             .collect(Collectors.toList());
     }
-    
+
+    @Override
+    public List<BookingDto> getBookingsByDate(Long businessId, LocalDate date) {
+        List<Booking> bookings = bookingRepository.findByBusinessIdAndBookingDateOrderByBookingTimeAsc(businessId, date);
+        return bookings.stream()
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingDto> getUpcomingBookingsForClient(Long businessId, Long clientId) {
+        List<Booking> bookings = bookingRepository.findUpcomingBookingsForClient(
+            businessId,
+            clientId,
+            LocalDate.now(),
+            LocalTime.now()
+        );
+        return bookings.stream()
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
+    }
+
     private BookingDto convertToDto(Booking booking) {
         BookingDto dto = new BookingDto();
         dto.setId(booking.getId());
@@ -135,7 +174,7 @@ public class BookingServiceImpl implements BookingService {
         dto.setService(booking.getService().getName());
         dto.setStaff(getStaffName(booking.getStaff()));
         dto.setDate(booking.getBookingDate());
-        dto.setTime(booking.getBookingTime().format(DateTimeFormatter.ofPattern("h:mm a")));
+        dto.setTime(booking.getBookingTime());
         dto.setDuration(booking.getDurationMinutes());
         dto.setStatus(booking.getStatus().name().toLowerCase().replace("_", "-"));
         dto.setPrice(booking.getPrice());

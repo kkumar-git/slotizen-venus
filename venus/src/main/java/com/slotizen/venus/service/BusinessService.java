@@ -19,6 +19,7 @@ public interface BusinessService {
 	BusinessProfileResponse getBusinessProfile();
     BusinessProfileResponse createOrUpdateProfile(BusinessProfileRequest request, Long businessId);
     BusinessHoursResponse setupBusinessHours(Long businessId, BusinessHoursRequest request);
+    BusinessHoursResponse getBusinessHours(Long businessId);
     LogoUploadResponse uploadLogo(Long userId, Long businessId, MultipartFile file);
     LogoUploadResponse uploadImage(Long userId, MultipartFile file);
     boolean deleteImage(Long userId);

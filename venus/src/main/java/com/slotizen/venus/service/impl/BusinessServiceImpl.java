@@ -74,6 +74,8 @@ public class BusinessServiceImpl implements BusinessService {
         profile.setPhone(request.phone);
         profile.setWebsite(request.website);
         profile.setTimezone(request.timezone);
+        profile.setDefaultDuration(request.defaultDuration != null ? request.defaultDuration : 60);
+        profile.setCurrency(request.currency != null ? request.currency : "USD");
         profile.setSlug(generateSlug(request.businessName));
         profile.setCompetitionLevel(1);
         if (profile.getCreatedAt() == null)
@@ -104,6 +106,8 @@ public class BusinessServiceImpl implements BusinessService {
         resp.data.businessName = profile.getBusinessName();
         resp.data.slug = profile.getSlug();
         resp.data.createdAt = profile.getCreatedAt();
+        resp.data.defaultDuration = profile.getDefaultDuration();
+        resp.data.currency = profile.getCurrency();
         return resp;
     }
 
@@ -133,6 +137,8 @@ public class BusinessServiceImpl implements BusinessService {
             resp.data.active = profile.isActive();
             resp.data.competitionLevel = profile.getCompetitionLevel();
             resp.data.completed = profile.isCompleted();
+            resp.data.defaultDuration = profile.getDefaultDuration();
+            resp.data.currency = profile.getCurrency();
             resp.data.slug = profile.getSlug();
             resp.data.createdAt = profile.getCreatedAt();
             return resp;
@@ -175,6 +181,46 @@ public class BusinessServiceImpl implements BusinessService {
         resp.data = new BusinessHoursResponse.Data();
         resp.data.businessId = businessId;
         resp.data.businessHours = request.businessHours;
+        return resp;
+    }
+
+    @Override
+    public BusinessHoursResponse getBusinessHours(Long businessId) {
+        BusinessProfile profile = businessProfileRepository.findById(businessId).orElse(null);
+        if (profile == null) {
+            BusinessHoursResponse resp = new BusinessHoursResponse();
+            resp.success = false;
+            resp.message = "Business not found";
+            return resp;
+        }
+
+        BusinessHours hours = businessHoursRepository.findByBusinessProfile(profile);
+        BusinessHoursResponse resp = new BusinessHoursResponse();
+        resp.success = true;
+        resp.message = "Business hours retrieved successfully";
+        resp.data = new BusinessHoursResponse.Data();
+        resp.data.businessId = businessId;
+        
+        if (hours != null) {
+            // Convert back to response format
+            String businessTimezone = profile.getTimezone();
+            ZoneId businessZone = businessTimezone != null ? ZoneId.of(businessTimezone) : ZoneId.systemDefault();
+
+            BusinessHoursRequest.Hours businessHours = new BusinessHoursRequest.Hours();
+            businessHours.monday = fromDailyWithTimezone(hours.getMonday(), businessZone);
+            businessHours.tuesday = fromDailyWithTimezone(hours.getTuesday(), businessZone);
+            businessHours.wednesday = fromDailyWithTimezone(hours.getWednesday(), businessZone);
+            businessHours.thursday = fromDailyWithTimezone(hours.getThursday(), businessZone);
+            businessHours.friday = fromDailyWithTimezone(hours.getFriday(), businessZone);
+            businessHours.saturday = fromDailyWithTimezone(hours.getSaturday(), businessZone);
+            businessHours.sunday = fromDailyWithTimezone(hours.getSunday(), businessZone);
+            
+            resp.data.businessHours = businessHours;
+        } else {
+            // Return default empty business hours if none exist
+            resp.data.businessHours = new BusinessHoursRequest.Hours();
+        }
+        
         return resp;
     }
 
@@ -413,5 +459,20 @@ public class BusinessServiceImpl implements BusinessService {
                 d.isOpen,
                 openTime,
                 closeTime);
+    }
+
+    private BusinessHoursRequest.Day fromDailyWithTimezone(DailyHours dailyHours, ZoneId businessZone) {
+        if (dailyHours == null) {
+            BusinessHoursRequest.Day day = new BusinessHoursRequest.Day();
+            day.isOpen = false;
+            return day;
+        }
+
+        BusinessHoursRequest.Day day = new BusinessHoursRequest.Day();
+        day.isOpen = dailyHours.getIsOpen();
+        day.openTime = dailyHours.getOpenTime();
+        day.closeTime = dailyHours.getCloseTime();
+        
+        return day;
     }
 }

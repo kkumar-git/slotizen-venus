@@ -14,63 +14,55 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     
-    /**
-     * Find all bookings for a specific business ordered by date and time
-     */
-    List<Booking> findByBusinessIdOrderByBookingDateDescBookingTimeDesc(Long businessId);
+    // Find all bookings for a business
+    List<Booking> findByBusinessIdOrderByBookingDateDescBookingTimeAsc(Long businessId);
     
-    /**
-     * Find bookings by status for a business
-     */
+    // Find bookings by business and status
     List<Booking> findByBusinessIdAndStatus(Long businessId, BookingStatus status);
     
-    /**
-     * Find bookings for a specific date
-     */
-    List<Booking> findByBusinessIdAndBookingDate(Long businessId, LocalDate date);
+    // Find bookings by business and staff
+    List<Booking> findByBusinessIdAndStaff_Id(Long businessId, Long staffId);
     
-    /**
-     * Find bookings for a specific staff member
-     */
-    List<Booking> findByBusinessIdAndStaffId(Long businessId, Long staffId);
+    // Find bookings by business and specific date
+    List<Booking> findByBusinessIdAndBookingDateOrderByBookingTimeAsc(Long businessId, LocalDate bookingDate);
     
-    /**
-     * Find bookings for a specific client
-     */
-    List<Booking> findByBusinessIdAndClientId(Long businessId, Long clientId);
+    // Find by business and booking ID
+    List<Booking> findByBusinessIdAndId(Long businessId, Long bookingId);
     
-    /**
-     * Check for scheduling conflicts (same staff, overlapping time)
-     */
+    // Alternative simpler approach - let's use this instead
     @Query("SELECT b FROM Booking b WHERE b.businessId = :businessId " +
            "AND b.staff.id = :staffId " +
            "AND b.bookingDate = :date " +
-           "AND b.status != 'CANCELLED' " +
-           "AND ((:startTime >= b.bookingTime AND :startTime < FUNCTION('ADDTIME', b.bookingTime, FUNCTION('SEC_TO_TIME', b.durationMinutes * 60))) " +
-           "OR (b.bookingTime >= :startTime AND b.bookingTime < :endTime))")
-    List<Booking> findConflictingBookings(
-        @Param("businessId") Long businessId,
-        @Param("staffId") Long staffId,
-        @Param("date") LocalDate date,
-        @Param("startTime") LocalTime startTime,
-        @Param("endTime") LocalTime endTime
+           "AND b.status != 'CANCELLED'")
+    List<Booking> findBookingsForStaffOnDate(
+            @Param("businessId") Long businessId,
+            @Param("staffId") Long staffId,
+            @Param("date") LocalDate date
     );
     
-    /**
-     * Find bookings by business and date range
-     */
+    // Find bookings by date range
     @Query("SELECT b FROM Booking b WHERE b.businessId = :businessId " +
            "AND b.bookingDate BETWEEN :startDate AND :endDate " +
            "ORDER BY b.bookingDate ASC, b.bookingTime ASC")
     List<Booking> findByBusinessIdAndDateRange(
-        @Param("businessId") Long businessId,
-        @Param("startDate") LocalDate startDate,
-        @Param("endDate") LocalDate endDate
+            @Param("businessId") Long businessId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
     );
     
-    /**
-     * Count bookings by status for statistics
-     */
-    @Query("SELECT COUNT(b) FROM Booking b WHERE b.businessId = :businessId AND b.status = :status")
-    Long countByBusinessIdAndStatus(@Param("businessId") Long businessId, @Param("status") BookingStatus status);
+    // Count bookings for a client
+    long countByBusinessIdAndClient_Id(Long businessId, Long clientId);
+    
+    // Find upcoming bookings for a client
+    @Query("SELECT b FROM Booking b WHERE b.businessId = :businessId " +
+           "AND b.client.id = :clientId " +
+           "AND (b.bookingDate > :currentDate OR " +
+           "(b.bookingDate = :currentDate AND b.bookingTime > :currentTime)) " +
+           "ORDER BY b.bookingDate ASC, b.bookingTime ASC")
+    List<Booking> findUpcomingBookingsForClient(
+            @Param("businessId") Long businessId,
+            @Param("clientId") Long clientId,
+            @Param("currentDate") LocalDate currentDate,
+            @Param("currentTime") LocalTime currentTime
+    );
 }

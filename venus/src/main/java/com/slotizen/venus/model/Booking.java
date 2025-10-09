@@ -32,7 +32,7 @@ public class Booking {
     private LocalDate bookingDate;
     
     @Column(name = "booking_time", nullable = false)
-    private LocalTime bookingTime;
+    private String bookingTime;
     
     @Column(name = "duration_minutes", nullable = false)
     private Integer durationMinutes;
@@ -60,7 +60,7 @@ public class Booking {
     public Booking() {}
     
     public Booking(Long businessId, Client client, ServiceEntity service, StaffMember staff,
-                   LocalDate bookingDate, LocalTime bookingTime, Integer durationMinutes,
+                   LocalDate bookingDate, String bookingTime, Integer durationMinutes,
                    BookingStatus status, BigDecimal price, String notes, Long createdBy) {
         this.businessId = businessId;
         this.client = client;
@@ -96,8 +96,8 @@ public class Booking {
     public LocalDate getBookingDate() { return bookingDate; }
     public void setBookingDate(LocalDate bookingDate) { this.bookingDate = bookingDate; }
     
-    public LocalTime getBookingTime() { return bookingTime; }
-    public void setBookingTime(LocalTime bookingTime) { this.bookingTime = bookingTime; }
+    public String getBookingTime() { return bookingTime; }
+    public void setBookingTime(String bookingTime) { this.bookingTime = bookingTime; }
     
     public Integer getDurationMinutes() { return durationMinutes; }
     public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }

@@ -35,6 +35,13 @@ public class BusinessProfile {
 	private boolean active = true;
 	private Integer competitionLevel;
 	private boolean completed = false;
+	
+	@Column(name = "default_duration")
+	private Integer defaultDuration = 45; // Default 45 minutes
+	
+	@Column(name = "currency", length = 3)
+	private String currency = "INR"; // Default INR currency
+	
 	@Column(nullable = false)
 	private ZonedDateTime createdAt = ZonedDateTime.now();
 
@@ -171,6 +178,22 @@ public class BusinessProfile {
 	}
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
+	}
+
+	public Integer getDefaultDuration() {
+		return defaultDuration;
+	}
+
+	public void setDefaultDuration(Integer defaultDuration) {
+		this.defaultDuration = defaultDuration;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 
 }
