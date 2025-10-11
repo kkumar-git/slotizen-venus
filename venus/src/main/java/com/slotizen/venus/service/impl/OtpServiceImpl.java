@@ -7,6 +7,7 @@ import com.slotizen.venus.service.OtpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,8 @@ public class OtpServiceImpl implements OtpService {
     @Autowired
     private OtpTokenRepository otpTokenRepository;
 
-    @Autowired
+    // Make JavaMailSender optional for now
+    @Autowired(required = false)
     private JavaMailSender javaMailSender;
 
     @Override
@@ -85,14 +87,20 @@ public class OtpServiceImpl implements OtpService {
     @Override
     public boolean sendOtpEmail(User user, String otp) {
         try {
+            if (javaMailSender == null) {
+                logger.warn("JavaMailSender not configured. Email sending is disabled. OTP for {}: {}", 
+                    user.getEmail(), otp);
+                System.out.println("Email sending disabled. OTP for " + user.getEmail() + ": " + otp);
+                return true; // Return true for testing purposes
+            }
+
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(user.getEmail());
             message.setSubject("Your Slotizen Verification Code");
             message.setText(buildOtpEmailContent(user.getFirstName(), otp));
             message.setFrom("noreply@slotizen.com");
-            System.out.println("Sending email to: " + user.getEmail() + " with OTP: " + otp);
-
-            //javaMailSender.send(message);
+            
+            javaMailSender.send(message);
             
             logger.info("OTP email sent successfully to: {}", user.getEmail());
             return true;
